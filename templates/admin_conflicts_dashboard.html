@@ -1,0 +1,212 @@
+{% extends "base_retro.html" %}
+
+{% block title %}Conflict Detection - Admin{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[!] Conflict Detection Dashboard</h1>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn">[<] Back to Dashboard</a>
+</div>
+
+<!-- Summary Stats -->
+<div class="grid-4 mb-2">
+    <div class="card">
+        <div class="card-body text-center">
+            <div class="stat-value text-primary">{{ stats.total_teachers }}</div>
+            <div class="stat-label">Teachers</div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body text-center">
+            <div class="stat-value text-success">{{ stats.total_rooms }}</div>
+            <div class="stat-label">Rooms</div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body text-center">
+            <div class="stat-value" style="color: var(--accent-yellow);">{{ stats.total_sessions }}</div>
+            <div class="stat-label">Total Sessions</div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body text-center">
+            <div class="stat-value text-info">{{ stats.avg_sessions_per_teacher }}</div>
+            <div class="stat-label">Avg per Teacher</div>
+        </div>
+    </div>
+</div>
+
+<!-- Conflict Alerts -->
+<div class="grid-2 mb-2">
+    <!-- Room Capacity Issues -->
+    <div class="card">
+        <div class="card-header flex-between" style="{% if conflicts.room_capacity_issues %}background: #9a5a5a;{% endif %}">
+            <h3>[!] Room Capacity Issues</h3>
+            <span class="badge {% if conflicts.room_capacity_issues %}badge-red{% else %}badge-green{% endif %}">
+                {{ conflicts.room_capacity_issues|length }}
+            </span>
+        </div>
+        <div class="card-body" style="max-height: 250px; overflow-y: auto;">
+            {% if conflicts.room_capacity_issues %}
+                {% for issue in conflicts.room_capacity_issues %}
+                <div class="alert alert-danger mb-1">
+                    <strong>{{ issue.date }} - {{ issue.time }}</strong><br>
+                    <span class="text-sm">
+                        {{ issue.students }} students need seats, only {{ issue.capacity }} available.
+                        <strong>Shortage: {{ issue.shortage }}</strong>
+                    </span>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-success">
+                    <span>[OK]</span> All sessions have sufficient room capacity.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Teacher Overload -->
+    <div class="card">
+        <div class="card-header flex-between" style="{% if conflicts.teacher_overload %}background: #9a7a3a;{% endif %}">
+            <h3>[!] Teacher Overload</h3>
+            <span class="badge {% if conflicts.teacher_overload %}badge-yellow{% else %}badge-green{% endif %}">
+                {{ conflicts.teacher_overload|length }}
+            </span>
+        </div>
+        <div class="card-body" style="max-height: 250px; overflow-y: auto;">
+            {% if conflicts.teacher_overload %}
+                {% for issue in conflicts.teacher_overload %}
+                <div class="alert alert-warning mb-1">
+                    <strong>{{ issue.teacher }}</strong> on {{ issue.date }}<br>
+                    <span class="text-sm">
+                        Assigned {{ issue.sessions }} sessions (max preferred: {{ issue.max_allowed }})
+                    </span>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-success">
+                    <span>[OK]</span> No teachers exceeding session limits.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="grid-2 mb-2">
+    <!-- Coverage Gaps -->
+    <div class="card">
+        <div class="card-header flex-between" style="{% if conflicts.coverage_gaps %}background: #9a5a5a;{% endif %}">
+            <h3>[!] Coverage Gaps</h3>
+            <span class="badge {% if conflicts.coverage_gaps %}badge-red{% else %}badge-green{% endif %}">
+                {{ conflicts.coverage_gaps|length }}
+            </span>
+        </div>
+        <div class="card-body" style="max-height: 250px; overflow-y: auto;">
+            {% if conflicts.coverage_gaps %}
+                {% for issue in conflicts.coverage_gaps %}
+                <div class="alert alert-danger mb-1">
+                    <strong>{{ issue.date }} - {{ issue.time }}</strong><br>
+                    <span class="text-sm">
+                        {{ issue.rooms_needed }} rooms need invigilators, only {{ issue.teachers_assigned }} assigned.
+                        <strong>Gap: {{ issue.gap }}</strong>
+                    </span>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-success">
+                    <span>[OK]</span> All sessions have sufficient coverage.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Consecutive Violations -->
+    <div class="card">
+        <div class="card-header flex-between" style="{% if conflicts.consecutive_violations %}background: #9a7a3a;{% endif %}">
+            <h3>[!] Consecutive Session Violations</h3>
+            <span class="badge {% if conflicts.consecutive_violations %}badge-yellow{% else %}badge-green{% endif %}">
+                {{ conflicts.consecutive_violations|length }}
+            </span>
+        </div>
+        <div class="card-body" style="max-height: 250px; overflow-y: auto;">
+            {% if conflicts.consecutive_violations %}
+                {% for issue in conflicts.consecutive_violations %}
+                <div class="alert alert-warning mb-1">
+                    <strong>{{ issue.teacher }}</strong> on {{ issue.date }}<br>
+                    <span class="text-sm">
+                        Has consecutive sessions: {{ issue.first_session }} + {{ issue.second_session }}
+                    </span>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-success">
+                    <span>[OK]</span> No consecutive session violations.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Workload Distribution -->
+<div class="card">
+    <div class="card-header">
+        <h3>[=] Teacher Workload Distribution</h3>
+    </div>
+    <div class="card-body">
+        {% if workload %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Teacher</th>
+                    <th>Sessions</th>
+                    <th>Load Indicator</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set max_sessions = workload[0].sessions if workload else 1 %}
+                {% for item in workload %}
+                <tr>
+                    <td><strong>{{ item.teacher }}</strong></td>
+                    <td>{{ item.sessions }}</td>
+                    <td>
+                        <div style="background: var(--bg-secondary); height: 20px; width: 200px; border: 1px solid var(--border-color);">
+                            <div style="background: {% if item.sessions > stats.avg_sessions_per_teacher * 1.5 %}#9a5a5a{% elif item.sessions < stats.avg_sessions_per_teacher * 0.5 %}#4a7a9a{% else %}#5a7a5a{% endif %}; height: 100%; width: {{ (item.sessions / max_sessions * 100)|int }}%;"></div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="grid-3 mt-2">
+            <div class="text-sm"><span style="display: inline-block; width: 15px; height: 15px; background: #9a5a5a;"></span> Overloaded (>150% avg)</div>
+            <div class="text-sm"><span style="display: inline-block; width: 15px; height: 15px; background: #5a7a5a;"></span> Normal load</div>
+            <div class="text-sm"><span style="display: inline-block; width: 15px; height: 15px; background: #4a7a9a;"></span> Underloaded (<50% avg)</div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>No scheduling data available.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Actions -->
+<div class="card mt-2">
+    <div class="card-header">
+        <h3>[*] Quick Actions</h3>
+    </div>
+    <div class="card-body">
+        <div class="grid-3">
+            <a href="{{ url_for('admin_swap_requests') }}" class="btn" style="display: block; text-align: center;">
+                [S] Manage Swaps
+            </a>
+            <a href="{{ url_for('admin_notifications') }}" class="btn" style="display: block; text-align: center;">
+                [N] Notifications
+            </a>
+            <a href="{{ url_for('admin_rooms_config') }}" class="btn" style="display: block; text-align: center;">
+                [R] Room Config
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

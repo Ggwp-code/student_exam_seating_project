@@ -1,0 +1,186 @@
+{% extends "base_retro.html" %}
+
+{% block title %}Swap Requests - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[S] Swap Requests</h1>
+    <span class="badge badge-green">{{ username }}</span>
+</div>
+
+<!-- Create New Request -->
+<div class="card mb-2">
+    <div class="card-header">
+        <h3>[+] Request a Swap</h3>
+    </div>
+    <div class="card-body">
+        {% if my_schedule and other_teachers %}
+        <form method="POST" action="{{ url_for('create_swap_request') }}">
+            <div class="grid-2 mb-2">
+                <div class="form-group">
+                    <label class="form-label">Your Session to Swap</label>
+                    <select name="my_schedule_id" class="form-control" required>
+                        <option value="">-- Select your session --</option>
+                        {% for sched in my_schedule %}
+                        <option value="{{ sched[0] }}">{{ sched[2] }} | {{ sched[3] }} | {{ sched[1] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Swap With Teacher</label>
+                    <select name="target_username" id="target_teacher" class="form-control" required>
+                        <option value="">-- Select teacher --</option>
+                        {% for teacher in other_teachers %}
+                        <option value="{{ teacher }}">{{ teacher }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group mb-2">
+                <label class="form-label">Their Session You Want</label>
+                <select name="target_schedule_id" id="target_schedule" class="form-control" required>
+                    <option value="">-- First select a teacher --</option>
+                </select>
+            </div>
+            <div class="form-group mb-2">
+                <label class="form-label">Reason (Optional)</label>
+                <textarea name="reason" class="form-control" rows="2" placeholder="Why do you need this swap?"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">[>] Send Swap Request</button>
+        </form>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">[?]</div>
+            <p>No sessions available for swapping.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="grid-2">
+    <!-- Received Requests -->
+    <div class="card">
+        <div class="card-header flex-between">
+            <h3>[!] Received Requests</h3>
+            <span class="badge badge-blue">{{ received_requests|length }}</span>
+        </div>
+        <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+            {% if received_requests %}
+                {% for req in received_requests %}
+                <div class="card mb-1" style="border-left: 3px solid {% if req[2] == 'pending' %}#d4a017{% else %}#6b8e6b{% endif %};">
+                    <div class="card-body" style="padding: 10px;">
+                        <div class="flex-between mb-1">
+                            <strong>From: {{ req[1] }}</strong>
+                            <span class="badge {% if req[2] == 'pending' %}badge-yellow{% elif req[2] == 'teacher_accepted' %}badge-blue{% else %}badge-green{% endif %}">
+                                {{ req[2] }}
+                            </span>
+                        </div>
+                        <div class="text-sm mb-1">
+                            <p><strong>They offer:</strong> {{ req[6] }} | {{ req[7] }} | {{ req[5] }}</p>
+                            <p><strong>They want:</strong> {{ req[9] }} | {{ req[10] }} | {{ req[8] }}</p>
+                        </div>
+                        {% if req[3] %}
+                        <p class="text-sm text-muted">Reason: {{ req[3] }}</p>
+                        {% endif %}
+                        {% if req[2] == 'pending' %}
+                        <div style="display: flex; gap: 8px; margin-top: 8px;">
+                            <form method="POST" action="{{ url_for('respond_swap_request', request_id=req[0]) }}" style="display: inline;">
+                                <input type="hidden" name="action" value="accept">
+                                <button type="submit" class="btn btn-sm btn-success">[Y] Accept</button>
+                            </form>
+                            <form method="POST" action="{{ url_for('respond_swap_request', request_id=req[0]) }}" style="display: inline;">
+                                <input type="hidden" name="action" value="reject">
+                                <button type="submit" class="btn btn-sm btn-danger">[N] Reject</button>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <p class="text-sm text-muted">No swap requests received.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Sent Requests -->
+    <div class="card">
+        <div class="card-header flex-between">
+            <h3>[>] Sent Requests</h3>
+            <span class="badge badge-blue">{{ sent_requests|length }}</span>
+        </div>
+        <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+            {% if sent_requests %}
+                {% for req in sent_requests %}
+                <div class="card mb-1" style="border-left: 3px solid {% if req[2] == 'pending' %}#d4a017{% elif req[2] == 'approved' %}#5a7a5a{% elif req[2] == 'teacher_accepted' %}#4a7a9a{% else %}#9a5a5a{% endif %};">
+                    <div class="card-body" style="padding: 10px;">
+                        <div class="flex-between mb-1">
+                            <strong>To: {{ req[1] }}</strong>
+                            <span class="badge {% if req[2] == 'pending' %}badge-yellow{% elif req[2] == 'approved' %}badge-green{% elif req[2] == 'teacher_accepted' %}badge-blue{% else %}badge-red{% endif %}">
+                                {{ req[2] }}
+                            </span>
+                        </div>
+                        <div class="text-sm">
+                            <p><strong>You offer:</strong> {{ req[6] }} | {{ req[7] }} | {{ req[5] }}</p>
+                            <p><strong>You want:</strong> {{ req[9] }} | {{ req[10] }} | {{ req[8] }}</p>
+                        </div>
+                        <p class="text-sm text-muted mt-1">{{ req[4] }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <p class="text-sm text-muted">No swap requests sent.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Legend -->
+<div class="card mt-2">
+    <div class="card-header">
+        <h3>[?] Status Legend</h3>
+    </div>
+    <div class="card-body">
+        <div class="grid-4">
+            <div><span class="badge badge-yellow">pending</span> Awaiting response</div>
+            <div><span class="badge badge-blue">teacher_accepted</span> Awaiting admin</div>
+            <div><span class="badge badge-green">approved</span> Swap completed</div>
+            <div><span class="badge" style="background: #9a5a5a;">rejected</span> Request denied</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('target_teacher').addEventListener('change', function() {
+    const teacher = this.value;
+    const targetScheduleSelect = document.getElementById('target_schedule');
+
+    if (!teacher) {
+        targetScheduleSelect.innerHTML = '<option value="">-- First select a teacher --</option>';
+        return;
+    }
+
+    fetch(`/api/teacher/${teacher}/schedule`)
+        .then(response => response.json())
+        .then(data => {
+            targetScheduleSelect.innerHTML = '<option value="">-- Select their session --</option>';
+            data.forEach(sched => {
+                const option = document.createElement('option');
+                option.value = sched.id;
+                option.textContent = `${sched.date} | ${sched.time} | ${sched.room}`;
+                targetScheduleSelect.appendChild(option);
+            });
+        })
+        .catch(err => {
+            console.error('Error loading schedule:', err);
+            targetScheduleSelect.innerHTML = '<option value="">Error loading schedule</option>';
+        });
+});
+</script>
+{% endblock %}

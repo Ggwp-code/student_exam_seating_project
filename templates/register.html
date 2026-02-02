@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Exam Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/retro.css') }}">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            background: var(--bg-primary);
+        }
+        .register-container {
+            width: 100%;
+            max-width: 600px;
+        }
+        .register-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .register-icon {
+            font-family: 'VT323', monospace;
+            font-size: 48px;
+            color: var(--accent-green);
+        }
+        .hidden { display: none; }
+        .info-box {
+            padding: 12px;
+            border: 2px solid;
+            margin: 12px 0;
+        }
+        .info-box-warning {
+            background: #f5f0e4;
+            border-color: var(--accent-yellow);
+            color: #6a5c30;
+        }
+        .info-box-info {
+            background: #e4f0f5;
+            border-color: var(--accent-blue);
+            color: #305c6a;
+        }
+        .info-box-success {
+            background: #e8f5e4;
+            border-color: var(--accent-green);
+            color: #3a5c30;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-header">
+            <div class="register-icon">[+]</div>
+            <h1 style="margin: 8px 0; font-size: 22px;">Create an Account</h1>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    <span>[{% if category == 'success' %}OK{% elif category == 'danger' %}!!{% else %}**{% endif %}]</span>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <div class="card">
+            <div class="card-header">
+                <h3>[>] Registration Form</h3>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('register') }}" method="POST">
+                    <div class="form-group">
+                        <label for="role">Register As</label>
+                        <select name="role" id="role" required class="form-control">
+                            <option value="">-- Select Role --</option>
+                            <option value="student">Student</option>
+                            <option value="teacher">Teacher</option>
+                        </select>
+                    </div>
+
+                    <!-- Student ID Field -->
+                    <div id="studentIdWrapper" class="hidden">
+                        <div class="form-group">
+                            <label for="student_id">Student ID <span class="badge badge-red">Required</span></label>
+                            <input type="text" name="student_id" id="student_id"
+                                   class="form-control" placeholder="e.g., 1001, ST2023001"
+                                   pattern="[A-Za-z0-9]+">
+                        </div>
+                        <div class="info-box info-box-warning">
+                            <strong>[!] Important:</strong> Enter your Student ID exactly as it appears in student records.
+                            Only letters and numbers are allowed.
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" name="username" id="username" required class="form-control">
+                            <small id="usernameHelp" class="text-muted">Choose a username for your account</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" name="email" required class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" name="password" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm_password">Confirm Password</label>
+                            <input type="password" name="confirm_password" required class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- Teacher Room Assignment -->
+                    <div id="assignedRoomWrapper" class="hidden form-group">
+                        <label for="assigned_room">Assign Room (for Teachers)</label>
+                        <select name="assigned_room" id="assigned_room" class="form-control">
+                            <option value="">-- Select Room --</option>
+                            {% for room in available_rooms %}
+                                <option value="{{ room.room_name }}">{{ room.room_name }} ({{ room.capacity }} seats)</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- 2FA Setup for Teachers -->
+                    <div id="twoFactorSetup" class="hidden">
+                        <div class="info-box info-box-info">
+                            <strong>[S] Two-Factor Authentication Required</strong>
+                            <p class="text-sm mt-1">Teachers must set up 2FA for security. After registration, you'll receive a QR code to scan with Google Authenticator.</p>
+                        </div>
+                    </div>
+
+                    <!-- Student Notice -->
+                    <div id="studentNotice" class="hidden">
+                        <div class="info-box info-box-success">
+                            <strong>[?] Student Registration</strong>
+                            <ol style="margin: 8px 0 0 20px; padding: 0; font-size: 13px;">
+                                <li>Enter Student ID exactly as in school records</li>
+                                <li>System will verify your ID against database</li>
+                                <li>Your Student ID will be used as username</li>
+                                <li>No 2FA required for students</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 16px;">
+                        [+] Register
+                    </button>
+
+                    <div style="text-align: center; margin-top: 16px; padding-top: 16px; border-top: 2px dashed var(--border-light);">
+                        Already have an account? <a href="{{ url_for('login') }}" style="color: var(--accent-blue);">Login</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const roleSelect = document.getElementById('role');
+        const assignedWrapper = document.getElementById('assignedRoomWrapper');
+        const twoFactorSetup = document.getElementById('twoFactorSetup');
+        const studentIdWrapper = document.getElementById('studentIdWrapper');
+        const studentNotice = document.getElementById('studentNotice');
+        const studentIdInput = document.getElementById('student_id');
+        const usernameInput = document.getElementById('username');
+        const usernameHelp = document.getElementById('usernameHelp');
+
+        function toggleRoleSpecificFields() {
+            if (roleSelect.value === 'teacher') {
+                assignedWrapper.classList.remove('hidden');
+                twoFactorSetup.classList.remove('hidden');
+                studentIdWrapper.classList.add('hidden');
+                studentNotice.classList.add('hidden');
+                studentIdInput.removeAttribute('required');
+                usernameInput.setAttribute('required', 'required');
+                usernameHelp.textContent = 'Choose a username for your teacher account';
+            } else if (roleSelect.value === 'student') {
+                studentIdWrapper.classList.remove('hidden');
+                studentNotice.classList.remove('hidden');
+                studentIdInput.setAttribute('required', 'required');
+                assignedWrapper.classList.add('hidden');
+                twoFactorSetup.classList.add('hidden');
+                usernameInput.removeAttribute('required');
+                usernameHelp.innerHTML = '<span style="color: var(--accent-yellow);">[!] For students: Your Student ID will be used as username</span>';
+            } else {
+                assignedWrapper.classList.add('hidden');
+                twoFactorSetup.classList.add('hidden');
+                studentIdWrapper.classList.add('hidden');
+                studentNotice.classList.add('hidden');
+                studentIdInput.removeAttribute('required');
+                usernameInput.setAttribute('required', 'required');
+                usernameHelp.textContent = 'Choose a username for your account';
+            }
+        }
+
+        roleSelect.addEventListener('change', toggleRoleSpecificFields);
+        window.addEventListener('DOMContentLoaded', toggleRoleSpecificFields);
+    </script>
+</body>
+</html>

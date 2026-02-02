@@ -1,0 +1,310 @@
+{% extends "base_retro.html" %}
+
+{% block title %}Dashboard - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[=] Admin Dashboard</h1>
+</div>
+
+<!-- Statistics Cards -->
+<div class="grid-3 mb-2">
+    <div class="card text-center">
+        <div class="card-body">
+            <div class="stat-value text-primary">{{ users|length }}</div>
+            <div class="stat-label">Users</div>
+            <p class="text-sm text-muted mt-1">
+                Admin: {{ users|selectattr('role', 'equalto', 'admin')|list|length }} |
+                Teacher: {{ users|selectattr('role', 'equalto', 'teacher')|list|length }} |
+                Student: {{ users|selectattr('role', 'equalto', 'student')|list|length }}
+            </p>
+        </div>
+    </div>
+
+    <div class="card text-center">
+        <div class="card-body">
+            <div class="stat-value text-success">{{ total_students }}</div>
+            <div class="stat-label">Students in System</div>
+            <p class="text-sm text-muted mt-1">Ready for exam allocation</p>
+        </div>
+    </div>
+
+    <div class="card text-center">
+        <div class="card-body">
+            <div class="stat-value" style="color: var(--accent-purple);">{{ active_exams }}</div>
+            <div class="stat-label">Active Exams</div>
+            <p class="text-sm text-muted mt-1">Unique subjects scheduled</p>
+        </div>
+    </div>
+</div>
+
+<!-- Main Management -->
+<div class="grid-2 mb-2">
+    <!-- Room Management -->
+    <div class="card">
+        <div class="card-header flex-between">
+            <h3>[R] Room Management</h3>
+            <span class="badge badge-blue">{{ global_room_configs_from_db|length }} Rooms</span>
+        </div>
+        <div class="card-body">
+            <div class="grid-2 mb-1">
+                <a href="{{ url_for('admin_rooms_config') }}" class="btn" style="display: block; text-align: center;">
+                    [>] Configure Rooms
+                </a>
+                <a href="{{ url_for('admin_view_all_rooms') }}" class="btn btn-primary" style="display: block; text-align: center;">
+                    [#] View All Rooms
+                </a>
+            </div>
+            <a href="{{ url_for('seating_dashboard') }}" target="_blank" class="btn" style="display: block;">
+                [>] View Layout Dashboard
+            </a>
+            <form method="POST" action="{{ url_for('admin_generate_seating') }}" style="margin-top: 0.5rem;">
+                <button type="submit" class="btn btn-success" style="display: block; width: 100%;">
+                    [*] Regenerate Seating Layouts
+                </button>
+            </form>
+
+            <hr class="divider">
+            <h4 class="mb-1">Current Rooms:</h4>
+            <div style="max-height: 120px; overflow-y: auto;">
+                {% for room in global_room_configs_from_db %}
+                <div class="flex-between text-sm">
+                    <span>{{ room.room_name }}</span>
+                    <code>{{ room.capacity }} seats</code>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Exam Management -->
+    <div class="card">
+        <div class="card-header">
+            <h3>[E] Exam Management</h3>
+        </div>
+        <div class="card-body">
+            <a href="{{ url_for('admin_manage_exams') }}" class="btn btn-primary mb-1" style="display: block;">
+                [+] Manage Exams & Sections
+            </a>
+            <a href="{{ url_for('admin_exam_schedule') }}" class="btn btn-success mb-1" style="display: block;">
+                [>] View Exam Schedule
+            </a>
+            <a href="{{ url_for('admin_seating_rules') }}" class="btn" style="display: block; background: var(--accent-purple); color: white;">
+                [>] Seating Rules & Constraints
+            </a>
+
+            <hr class="divider">
+            <h4 class="mb-1">Exam Time Distribution:</h4>
+            <div class="flex-between text-sm">
+                <span><span style="color: var(--accent-yellow);">[*]</span> Morning</span>
+                <span>{{ exam_time_distribution.Morning or 0 }} students</span>
+            </div>
+            <div class="flex-between text-sm">
+                <span><span style="color: var(--accent-red);">[*]</span> Afternoon</span>
+                <span>{{ exam_time_distribution.Afternoon or 0 }} students</span>
+            </div>
+            <div class="flex-between text-sm">
+                <span><span style="color: var(--accent-blue);">[*]</span> Evening</span>
+                <span>{{ exam_time_distribution.Evening or 0 }} students</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Management -->
+<div class="card mb-2">
+    <div class="card-header flex-between">
+        <h3>[U] User Management</h3>
+        <a href="{{ url_for('register') }}" class="btn btn-success btn-sm">[+] Add User</a>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Room</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>
+                        <div class="flex" style="align-items: center; gap: 8px;">
+                            <span class="badge badge-gray" style="padding: 4px 8px;">{{ user.username[0]|upper }}</span>
+                            {{ user.username }}
+                        </div>
+                    </td>
+                    <td><code class="text-sm">{{ user.email }}</code></td>
+                    <td>
+                        <span class="badge badge-{% if user.role == 'admin' %}blue{% elif user.role == 'teacher' %}green{% else %}gray{% endif %}">
+                            {{ user.role }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if user.role == 'teacher' %}
+                            {% if user.assigned_room %}
+                                <span class="badge badge-blue">{{ user.assigned_room }}</span>
+                            {% else %}
+                                <span class="badge badge-warning">Unassigned</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-muted">N/A</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.username != username %}
+                            <a href="{{ url_for('admin_edit_user', user_id=user.id) }}" class="btn btn-sm">[~]</a>
+                            <button onclick="confirmDelete('{{ user.username }}', {{ user.id }})" class="btn btn-sm btn-danger">[x]</button>
+                        {% else %}
+                            <span class="text-muted text-sm">Current User</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Scheduling Tools -->
+<div class="card mb-2">
+    <div class="card-header flex-between">
+        <h3>[T] Scheduling Tools</h3>
+        <span class="badge badge-yellow">Invigilation</span>
+    </div>
+    <div class="card-body">
+        <div class="grid-3 mb-1">
+            <a href="{{ url_for('admin_conflicts_dashboard') }}" class="btn btn-danger" style="display: block; text-align: center;">
+                [!] Conflict Detection
+            </a>
+            <a href="{{ url_for('admin_swap_requests') }}" class="btn btn-primary" style="display: block; text-align: center;">
+                [S] Swap Requests
+            </a>
+            <a href="{{ url_for('admin_notifications') }}" class="btn" style="display: block; text-align: center;">
+                [N] Notifications
+            </a>
+        </div>
+        <p class="text-sm text-muted">Manage teacher schedules, handle swap requests, and send notifications.</p>
+    </div>
+</div>
+
+<!-- QR Code Management -->
+<div class="card mb-2">
+    <div class="card-header flex-between">
+        <h3>[Q] QR Code Management</h3>
+        <span class="badge badge-purple">Student IDs</span>
+    </div>
+    <div class="card-body">
+        <p class="text-sm text-muted mb-1">Generate and manage QR codes for student identification during exams.</p>
+        <a href="{{ url_for('admin_qr_codes') }}" class="btn btn-primary" style="display: block;">
+            [>] Manage QR Codes
+        </a>
+    </div>
+</div>
+
+<!-- Security Settings -->
+<div class="card">
+    <div class="card-header">
+        <h3>[S] Security Settings</h3>
+    </div>
+    <div class="card-body">
+        <div class="grid-2">
+            <div>
+                <h4 class="mb-1">[OK] Shared Two-Factor Authentication</h4>
+                <div class="alert alert-success mb-2">
+                    <span>[OK]</span> Shared TOTP Active - All administrators and teachers use the same authenticator entry.
+                </div>
+
+                {% if admin_data and admin_data.qr_code_svg %}
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5>QR Code for New Devices</h5>
+                        {{ admin_data.qr_code_svg | safe }}
+                        <p class="text-sm text-muted mt-1">Scan with Google Authenticator or Authy</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div>
+                {% if admin_data and admin_data.totp_secret %}
+                <h4 class="mb-1">[?] Secret Key (Manual Entry)</h4>
+                <div class="card mb-1">
+                    <div class="card-body">
+                        <code style="word-break: break-all; font-size: 12px;">{{ admin_data.totp_secret }}</code>
+                    </div>
+                </div>
+                <button onclick="navigator.clipboard.writeText('{{ admin_data.totp_secret }}')" class="btn btn-sm btn-primary">
+                    [C] Copy Secret
+                </button>
+
+                <div class="alert alert-warning mt-2">
+                    <span>[!]</span> Keep this secret key secure. Anyone with access can generate valid 2FA codes.
+                </div>
+                {% else %}
+                <div class="alert alert-danger">
+                    <span>[!!]</span> 2FA secret not available. Contact system administrator.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div id="deleteModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+        <div class="card" style="width: 400px;">
+            <div class="card-header">
+                <h3>[!] Confirm Deletion</h3>
+            </div>
+            <div class="card-body">
+                <p>Are you sure you want to delete user <strong id="deleteUsername"></strong>?</p>
+                <p class="text-muted text-sm">This action cannot be undone.</p>
+                <div class="flex-between mt-2">
+                    <button onclick="closeDeleteModal()" class="btn">[<] Cancel</button>
+                    <button onclick="executeDelete()" class="btn btn-danger">[x] Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let deleteUserId = null;
+
+    function confirmDelete(username, userId) {
+        document.getElementById('deleteUsername').textContent = username;
+        deleteUserId = userId;
+        document.getElementById('deleteModal').style.display = 'block';
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+        deleteUserId = null;
+    }
+
+    function executeDelete() {
+        if (deleteUserId) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/admin/delete_user/' + deleteUserId;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target === this) closeDeleteModal();
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeDeleteModal();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends "base_retro.html" %}
+
+{% block title %}QR Code Management - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[Q] QR Code Management</h1>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn">[<] Back to Dashboard</a>
+</div>
+
+<!-- Info Card -->
+<div class="card mb-2">
+    <div class="card-header">
+        <h3>[i] About QR Codes</h3>
+    </div>
+    <div class="card-body">
+        <p>Generate QR codes for students to quickly identify them during exams. Each QR code contains the student ID for easy scanning.</p>
+    </div>
+</div>
+
+<!-- Generate QR Codes -->
+<div class="grid-2">
+    <div class="card">
+        <div class="card-header">
+            <h3>[+] Generate Individual QR Code</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('admin_generate_qr') }}">
+                <div class="form-group">
+                    <label class="form-label">Select Student</label>
+                    <select name="student_id" class="form-control" required>
+                        <option value="">-- Select a Student --</option>
+                        {% for student in students %}
+                        <option value="{{ student.student_id }}">{{ student.student_id }} - {{ student.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">[>] Generate QR Code</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>[*] Bulk Generate QR Codes</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('admin_generate_bulk_qr') }}">
+                <div class="form-group">
+                    <label class="form-label">Filter by Department</label>
+                    <select name="department" class="form-control">
+                        <option value="all">All Departments</option>
+                        {% for dept in departments %}
+                        <option value="{{ dept }}">{{ dept }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%;">[>] Generate All QR Codes</button>
+            </form>
+            <p class="text-sm text-muted mt-1">This will generate QR codes for all students in the selected department.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Generated QR Codes -->
+{% if qr_codes %}
+<div class="card">
+    <div class="card-header flex-between">
+        <h3>[#] Generated QR Codes</h3>
+        <span class="badge badge-green">{{ qr_codes|length }} QR Code(s)</span>
+    </div>
+    <div class="card-body">
+        <div class="grid-4">
+            {% for qr in qr_codes %}
+            <div class="card" style="margin-bottom: 0; text-align: center;">
+                <div class="card-header">
+                    <span style="font-size: 12px;"><strong>{{ qr.student_id }}</strong></span>
+                </div>
+                <div class="card-body" style="padding: 8px;">
+                    <img src="{{ qr.path }}" alt="QR Code" style="width: 100%; max-width: 150px;">
+                    <p class="text-sm text-muted" style="margin-top: 8px;">{{ qr.name }}</p>
+                    <a href="{{ qr.path }}" download class="btn btn-sm" style="width: 100%;">[D] Download</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Existing QR Codes List -->
+<div class="card">
+    <div class="card-header flex-between">
+        <h3>[=] All Existing QR Codes</h3>
+        <span class="badge badge-blue">{{ existing_qr_count }} Total</span>
+    </div>
+    <div class="card-body">
+        {% if existing_qr_files %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>File</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for qr_file in existing_qr_files %}
+                <tr>
+                    <td><strong>{{ qr_file.student_id }}</strong></td>
+                    <td><code class="text-sm">{{ qr_file.filename }}</code></td>
+                    <td>
+                        <a href="{{ qr_file.path }}" target="_blank" class="btn btn-sm">[V] View</a>
+                        <a href="{{ qr_file.path }}" download class="btn btn-sm btn-primary">[D] Download</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">[?]</div>
+            <p>No QR codes have been generated yet.</p>
+            <p class="text-sm text-muted">Use the forms above to generate QR codes for students.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

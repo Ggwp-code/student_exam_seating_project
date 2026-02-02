@@ -1,0 +1,160 @@
+{% extends "base_student.html" %}
+
+{% block title %}Student Dashboard - {{ name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[S] Student Dashboard</h1>
+    <div style="display: flex; align-items: center; gap: 10px;">
+        {% if photo_path %}
+        <img src="{{ photo_path }}" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--border-color);">
+        {% else %}
+        <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--accent-blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid var(--border-color);">
+            {{ name[0] | upper if name else 'S' }}
+        </div>
+        {% endif %}
+        <span class="badge badge-blue">{{ student_id }}</span>
+    </div>
+</div>
+
+<!-- Profile Information -->
+<div class="grid-2">
+    <div class="card">
+        <div class="card-header">
+            <h3>[i] Profile Information</h3>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <tr>
+                    <td class="text-muted" style="width: 40%;">Full Name</td>
+                    <td><strong>{{ name }}</strong></td>
+                </tr>
+                <tr>
+                    <td class="text-muted">Student ID</td>
+                    <td><strong>{{ student_id }}</strong></td>
+                </tr>
+                {% if exams and exams[0] %}
+                <tr>
+                    <td class="text-muted">Department</td>
+                    <td><span class="badge badge-purple">{{ exams[0].department }}</span></td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+
+    <!-- Stats Card -->
+    <div class="card">
+        <div class="card-header">
+            <h3>[%] Quick Stats</h3>
+        </div>
+        <div class="card-body">
+            <div class="stats-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                <div class="stat-card">
+                    <div class="stat-value">{{ exams|length if exams else 0 }}</div>
+                    <div class="stat-label">Upcoming Exams</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{% if exams %}{{ exams[0].room }}{% else %}--{% endif %}</div>
+                    <div class="stat-label">Next Room</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Exam Schedule -->
+<div class="card mt-2">
+    <div class="card-header flex-between">
+        <h3>[E] Exam Schedule</h3>
+        <span class="badge badge-green">{{ exams|length if exams else 0 }} Exam(s)</span>
+    </div>
+    <div class="card-body">
+        {% if exams %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Room</th>
+                    <th>Seat</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exam in exams %}
+                <tr>
+                    <td><strong>{{ exam.subject }}</strong></td>
+                    <td>{{ exam.date }}</td>
+                    <td>
+                        {% if exam.time == 'Morning' %}
+                        <span class="badge badge-yellow">Morning</span>
+                        {% elif exam.time == 'Afternoon' %}
+                        <span class="badge badge-blue">Afternoon</span>
+                        {% else %}
+                        <span class="badge badge-purple">Evening</span>
+                        {% endif %}
+                    </td>
+                    <td><span class="badge badge-green">{{ exam.room }}</span></td>
+                    <td><strong>#{{ exam.seat_no }}</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">[?]</div>
+            <p>No upcoming exams scheduled.</p>
+            <p class="text-sm text-muted">Check back later for your exam schedule.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Exam Details Cards -->
+{% if exams %}
+<div class="card mt-2">
+    <div class="card-header">
+        <h3>[#] Exam Details</h3>
+    </div>
+    <div class="card-body">
+        <div class="grid-2">
+            {% for exam in exams %}
+            <div class="card" style="margin-bottom: 0; background: var(--bg-dark);">
+                <div class="card-header flex-between">
+                    <span><strong>{{ exam.subject }}</strong></span>
+                    {% if exam.time == 'Morning' %}
+                    <span class="badge badge-yellow">Morning</span>
+                    {% elif exam.time == 'Afternoon' %}
+                    <span class="badge badge-blue">Afternoon</span>
+                    {% else %}
+                    <span class="badge badge-purple">Evening</span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <p class="text-muted text-sm">Date</p>
+                            <p><strong>{{ exam.date }}</strong></p>
+                        </div>
+                        <div>
+                            <p class="text-muted text-sm">Room</p>
+                            <p><strong>{{ exam.room }}</strong></p>
+                        </div>
+                        <div>
+                            <p class="text-muted text-sm">Seat Number</p>
+                            <p><strong>#{{ exam.seat_no }}</strong></p>
+                        </div>
+                        <div>
+                            <p class="text-muted text-sm">Department</p>
+                            <p><strong>{{ exam.department }}</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

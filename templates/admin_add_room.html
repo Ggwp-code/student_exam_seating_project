@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Room Configuration - Admin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <span class="text-xl font-semibold">Admin Panel - Add Room</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{{ url_for('admin_rooms_config') }}" class="text-gray-600 hover:text-gray-900">Back to Room List</a>
+                    <a href="{{ url_for('logout') }}" class="text-red-600 hover:text-red-700">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-2xl mx-auto px-4 py-6 bg-white rounded-lg shadow-md mt-6">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="p-4 mb-4 text-sm rounded-lg {% if category == 'success' %}bg-green-100 text-green-800{% elif category == 'danger' %}bg-red-100 text-red-800{% else %}bg-blue-100 text-blue-800{% endif %}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">Add New Room Configuration</h1>
+
+        <form method="POST" action="{{ url_for('admin_add_room_config') }}" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="room_name" class="block text-sm font-medium text-gray-700 mb-2">Room Name *</label>
+                    <input type="text" id="room_name" name="room_name" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="e.g., Room-A, Hall-1">
+                </div>
+                
+                <div>
+                    <label for="capacity" class="block text-sm font-medium text-gray-700 mb-2">Capacity *</label>
+                    <input type="number" id="capacity" name="capacity" required min="1" max="200"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="30">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="max_subjects" class="block text-sm font-medium text-gray-700 mb-2">Max Subjects</label>
+                    <input type="number" id="max_subjects" name="max_subjects" min="1" max="50"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="15">
+                    <p class="text-sm text-gray-500 mt-1">Maximum number of different subjects allowed in this room</p>
+                </div>
+
+                <div>
+                    <label for="max_branches" class="block text-sm font-medium text-gray-700 mb-2">Max Branches</label>
+                    <input type="number" id="max_branches" name="max_branches" min="1" max="20"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="5">
+                    <p class="text-sm text-gray-500 mt-1">Maximum number of different branches allowed in this room</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="max_departments" class="block text-sm font-medium text-gray-700 mb-2">Max Departments</label>
+                    <input type="number" id="max_departments" name="max_departments" min="1" max="10" value="2"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <p class="text-sm text-gray-500 mt-1">Maximum number of different departments in this room (recommended: 2)</p>
+                </div>
+
+                <div>
+                    <label for="max_years" class="block text-sm font-medium text-gray-700 mb-2">Max Years</label>
+                    <input type="number" id="max_years" name="max_years" min="1" max="6" value="2"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <p class="text-sm text-gray-500 mt-1">Maximum number of different academic years in this room (recommended: 2)</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="layout_columns" class="block text-sm font-medium text-gray-700 mb-2">Layout Columns</label>
+                    <input type="number" id="layout_columns" name="layout_columns" min="3" max="20" value="6"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <p class="text-sm text-gray-500 mt-1">Number of columns in the seating layout</p>
+                </div>
+                
+                <div>
+                    <label for="layout_rows" class="block text-sm font-medium text-gray-700 mb-2">Layout Rows</label>
+                    <input type="number" id="layout_rows" name="layout_rows" min="3" max="20" value="5"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <p class="text-sm text-gray-500 mt-1">Number of rows in the seating layout</p>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-3">Allowed Years</label>
+                <div class="grid grid-cols-4 gap-3">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="year1" name="allowed_years" value="1" class="mr-2 rounded">
+                        <label for="year1" class="text-sm text-gray-700">Year 1</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="year2" name="allowed_years" value="2" class="mr-2 rounded" checked>
+                        <label for="year2" class="text-sm text-gray-700">Year 2</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="year3" name="allowed_years" value="3" class="mr-2 rounded" checked>
+                        <label for="year3" class="text-sm text-gray-700">Year 3</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="year4" name="allowed_years" value="4" class="mr-2 rounded">
+                        <label for="year4" class="text-sm text-gray-700">Year 4</label>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">Select which academic years are allowed to take exams in this room</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-3">Allowed Branches</label>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="branchCS" name="allowed_branches" value="CS" class="mr-2 rounded" checked>
+                        <label for="branchCS" class="text-sm text-gray-700">Computer Science (CS)</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="branchEC" name="allowed_branches" value="EC" class="mr-2 rounded" checked>
+                        <label for="branchEC" class="text-sm text-gray-700">Electronics (EC)</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="branchME" name="allowed_branches" value="ME" class="mr-2 rounded" checked>
+                        <label for="branchME" class="text-sm text-gray-700">Mechanical (ME)</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="branchEE" name="allowed_branches" value="EE" class="mr-2 rounded">
+                        <label for="branchEE" class="text-sm text-gray-700">Electrical (EE)</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="branchCE" name="allowed_branches" value="CE" class="mr-2 rounded">
+                        <label for="branchCE" class="text-sm text-gray-700">Civil (CE)</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="branchIT" name="allowed_branches" value="IT" class="mr-2 rounded">
+                        <label for="branchIT" class="text-sm text-gray-700">Information Technology (IT)</label>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">Select which branches are allowed to take exams in this room</p>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                <h3 class="font-semibold text-blue-800 mb-2">💡 Configuration Tips</h3>
+                <ul class="text-sm text-blue-700 space-y-1">
+                    <li>• Capacity should match the actual physical seats available</li>
+                    <li>• Layout columns × rows should be ≥ capacity for proper visualization</li>
+                    <li>• Lower max subjects/branches values help reduce conflicts</li>
+                    <li>• Year restrictions help organize exams by academic level</li>
+                </ul>
+            </div>
+
+            <div class="flex space-x-4 pt-4">
+                <button type="submit" 
+                        class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-medium">
+                    <svg class="inline w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Add Room Configuration
+                </button>
+                <a href="{{ url_for('admin_rooms_config') }}" 
+                   class="flex-1 bg-gray-300 text-gray-700 py-3 px-4 rounded-md hover:bg-gray-400 text-center font-medium">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Auto-calculate layout suggestions based on capacity
+        document.getElementById('capacity').addEventListener('input', function() {
+            const capacity = parseInt(this.value);
+            if (capacity > 0) {
+                // Suggest optimal layout
+                const cols = Math.ceil(Math.sqrt(capacity * 1.5));
+                const rows = Math.ceil(capacity / cols);
+                
+                document.getElementById('layout_columns').value = cols;
+                document.getElementById('layout_rows').value = rows;
+            }
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+</body>
+</html>

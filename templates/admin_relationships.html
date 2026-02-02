@@ -1,0 +1,285 @@
+{% extends "base_retro.html" %}
+
+{% block title %}Student Relationships - ExamSeat{% endblock %}
+
+{% block head %}
+<style>
+    .search-dropdown { max-height: 200px; overflow-y: auto; }
+    .student-option:hover { background-color: var(--bg-secondary); }
+    .selected-student { background-color: rgba(66, 133, 244, 0.1); border: 2px solid var(--accent-blue); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[&] Student Relationships (Friend Pairs)</h1>
+</div>
+
+<!-- Info Banner -->
+<div class="alert alert-info mb-2">
+    <span>[?]</span>
+    <strong>Friend Separation:</strong> Students marked as friends/relatives will NOT be seated adjacent to each other during exams.
+    The seating algorithm uses this data to prevent cheating.
+</div>
+
+{% if fallback %}
+<div class="alert alert-warning mb-2">
+    <span>[!]</span> PostgreSQL not configured. Student relationships require PostgreSQL database setup.
+</div>
+{% endif %}
+
+<div class="grid-3">
+    <!-- Add Relationship Form -->
+    <div class="card">
+        <div class="card-header">
+            <h3>[+] Add Friend Pair</h3>
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('add_relationship') }}" method="POST" id="addRelForm">
+                <!-- Student 1 -->
+                <div class="form-group" style="position: relative;">
+                    <label>Student 1</label>
+                    <input type="text" id="search1" placeholder="Type to search by ID or name..."
+                           class="form-control" autocomplete="off">
+                    <input type="hidden" name="student1_id" id="student1_id" required>
+                    <div id="dropdown1" class="card search-dropdown" style="position: absolute; z-index: 10; width: 100%; display: none; margin-top: 2px;">
+                        {% for student in students %}
+                        <div class="student-option" style="padding: 8px; cursor: pointer;" data-id="{{ student.id }}" data-name="{{ student.name }}" data-sid="{{ student.student_id }}">
+                            <code>{{ student.student_id }}</code> - {{ student.name }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div id="selected1" class="selected-student mt-1" style="display: none; padding: 8px;">
+                        <span id="selected1Text"></span>
+                        <button type="button" onclick="clearSelection(1)" class="btn btn-sm" style="float: right; padding: 2px 8px;">[x]</button>
+                    </div>
+                </div>
+
+                <!-- Student 2 -->
+                <div class="form-group" style="position: relative;">
+                    <label>Student 2</label>
+                    <input type="text" id="search2" placeholder="Type to search by ID or name..."
+                           class="form-control" autocomplete="off">
+                    <input type="hidden" name="student2_id" id="student2_id" required>
+                    <div id="dropdown2" class="card search-dropdown" style="position: absolute; z-index: 10; width: 100%; display: none; margin-top: 2px;">
+                        {% for student in students %}
+                        <div class="student-option" style="padding: 8px; cursor: pointer;" data-id="{{ student.id }}" data-name="{{ student.name }}" data-sid="{{ student.student_id }}">
+                            <code>{{ student.student_id }}</code> - {{ student.name }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div id="selected2" class="selected-student mt-1" style="display: none; padding: 8px;">
+                        <span id="selected2Text"></span>
+                        <button type="button" onclick="clearSelection(2)" class="btn btn-sm" style="float: right; padding: 2px 8px;">[x]</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Relationship Type</label>
+                    <div class="grid-2" style="gap: 8px;">
+                        <label style="display: flex; align-items: center; padding: 8px; border: 2px solid var(--border-color); cursor: pointer;">
+                            <input type="radio" name="relationship_type" value="friend" checked style="margin-right: 8px;">
+                            Friend
+                        </label>
+                        <label style="display: flex; align-items: center; padding: 8px; border: 2px solid var(--border-color); cursor: pointer;">
+                            <input type="radio" name="relationship_type" value="relative" style="margin-right: 8px;">
+                            Relative
+                        </label>
+                        <label style="display: flex; align-items: center; padding: 8px; border: 2px solid var(--border-color); cursor: pointer;">
+                            <input type="radio" name="relationship_type" value="same_hostel" style="margin-right: 8px;">
+                            Same Hostel
+                        </label>
+                        <label style="display: flex; align-items: center; padding: 8px; border: 2px solid var(--border-color); cursor: pointer;">
+                            <input type="radio" name="relationship_type" value="same_room" style="margin-right: 8px;">
+                            Same Room
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Notes (optional)</label>
+                    <textarea name="notes" rows="2" placeholder="e.g., Reported by teacher..."
+                              class="form-control"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    [+] Add Friend Pair
+                </button>
+            </form>
+
+            <hr class="divider">
+
+            <!-- Bulk Import -->
+            <h4>[^] Bulk Import</h4>
+            <form action="{{ url_for('bulk_import_relationships') }}" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>CSV File</label>
+                    <input type="file" name="csv_file" accept=".csv" required class="form-control">
+                    <small class="text-muted">Columns: student1_id, student2_id, type, notes</small>
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%;">
+                    [^] Import CSV
+                </button>
+            </form>
+
+            <hr class="divider">
+
+            <!-- Quick Add -->
+            <h4>[>] Quick Add (Paste IDs)</h4>
+            <form action="{{ url_for('add_relationship') }}" method="POST" id="quickAddForm">
+                <div class="form-group">
+                    <label>Student IDs (comma-separated)</label>
+                    <input type="text" id="quickIds" placeholder="e.g., STU001, STU002" class="form-control">
+                    <small class="text-muted">Enter two student IDs separated by comma</small>
+                </div>
+                <input type="hidden" name="student1_id" id="quick_student1_id">
+                <input type="hidden" name="student2_id" id="quick_student2_id">
+                <input type="hidden" name="relationship_type" value="friend">
+                <button type="button" onclick="quickAdd()" class="btn" style="width: 100%; background: var(--accent-purple); color: white;">
+                    [>] Quick Add as Friends
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Relationships List -->
+    <div class="card" style="grid-column: span 2;">
+        <div class="card-header flex-between">
+            <h3>[*] Active Relationships</h3>
+            <span class="badge badge-blue">{{ relationships|length }} pairs</span>
+        </div>
+        <div class="card-body">
+            {% if relationships %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Student 1</th>
+                        <th>Student 2</th>
+                        <th>Type</th>
+                        <th>Notes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rel, student1 in relationships %}
+                    <tr>
+                        <td>
+                            <strong>{{ rel.student1.name }}</strong><br>
+                            <code class="text-sm">{{ rel.student1.student_id }}</code>
+                        </td>
+                        <td>
+                            <strong>{{ rel.student2.name }}</strong><br>
+                            <code class="text-sm">{{ rel.student2.student_id }}</code>
+                        </td>
+                        <td>
+                            <span class="badge badge-{% if rel.relationship_type.value == 'friend' %}blue{% elif rel.relationship_type.value == 'relative' %}purple{% else %}gray{% endif %}">
+                                {{ rel.relationship_type.value }}
+                            </span>
+                        </td>
+                        <td class="text-sm">{{ rel.notes or '-' }}</td>
+                        <td>
+                            <form action="{{ url_for('delete_relationship', rel_id=rel.id) }}" method="POST" style="display: inline;">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Remove this relationship?')">
+                                    [x]
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="text-center py-4">
+                <div class="text-mono" style="font-size: 48px; color: var(--text-muted);">[&]</div>
+                <p class="text-muted">No relationships recorded yet.</p>
+                <p class="text-muted text-sm">Add student pairs that should not be seated adjacent during exams.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const students = [
+        {% for student in students %}
+        { id: {{ student.id }}, sid: "{{ student.student_id }}", name: "{{ student.name }}" },
+        {% endfor %}
+    ];
+
+    function setupSearch(num) {
+        const search = document.getElementById('search' + num);
+        const dropdown = document.getElementById('dropdown' + num);
+        const hiddenInput = document.getElementById('student' + num + '_id');
+        const selected = document.getElementById('selected' + num);
+        const selectedText = document.getElementById('selected' + num + 'Text');
+
+        search.addEventListener('focus', () => {
+            dropdown.style.display = 'block';
+        });
+
+        search.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const options = dropdown.querySelectorAll('.student-option');
+            options.forEach(opt => {
+                const sid = opt.dataset.sid.toLowerCase();
+                const name = opt.dataset.name.toLowerCase();
+                opt.style.display = (sid.includes(query) || name.includes(query)) ? 'block' : 'none';
+            });
+            dropdown.style.display = 'block';
+        });
+
+        dropdown.querySelectorAll('.student-option').forEach(opt => {
+            opt.addEventListener('click', () => {
+                hiddenInput.value = opt.dataset.id;
+                selectedText.textContent = opt.dataset.sid + ' - ' + opt.dataset.name;
+                selected.style.display = 'block';
+                search.value = '';
+                search.style.display = 'none';
+                dropdown.style.display = 'none';
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!search.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+    }
+
+    function clearSelection(num) {
+        const search = document.getElementById('search' + num);
+        const hiddenInput = document.getElementById('student' + num + '_id');
+        const selected = document.getElementById('selected' + num);
+
+        hiddenInput.value = '';
+        selected.style.display = 'none';
+        search.style.display = 'block';
+        search.value = '';
+    }
+
+    function quickAdd() {
+        const input = document.getElementById('quickIds').value;
+        const parts = input.split(',').map(s => s.trim());
+
+        if (parts.length !== 2) {
+            alert('Please enter exactly two student IDs separated by comma');
+            return;
+        }
+
+        const s1 = students.find(s => s.sid === parts[0]);
+        const s2 = students.find(s => s.sid === parts[1]);
+
+        if (!s1) { alert('Student ID not found: ' + parts[0]); return; }
+        if (!s2) { alert('Student ID not found: ' + parts[1]); return; }
+
+        document.getElementById('quick_student1_id').value = s1.id;
+        document.getElementById('quick_student2_id').value = s2.id;
+        document.getElementById('quickAddForm').submit();
+    }
+
+    setupSearch(1);
+    setupSearch(2);
+</script>
+{% endblock %}

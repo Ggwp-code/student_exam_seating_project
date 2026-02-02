@@ -1,0 +1,10 @@
+SeatNo,StudentID,Name,Department,Branch,Year,Subject,Room,Position_X,Position_Y,ExamDate,ExamTime
+1,1RV23CS067,BONAGIRI RAMA KRISHNA VIVEK,CS,Unknown,2,Operating Systems,Room-A,0,0,2026-06-23,Evening
+2,1RV23CS074,CHETAN M PATIL,CS,Unknown,2,Operating Systems,Room-A,1,0,2026-06-23,Evening
+3,1RV23CS079,CHITKALA PATIL,CS,Unknown,2,Operating Systems,Room-A,2,0,2026-06-23,Evening
+4,1RV23CS089,G C NIKHIL,CS,Unknown,2,Operating Systems,Room-A,3,0,2026-06-23,Evening
+5,1RV23CS097,HARSHIT VARMA,CS,Unknown,2,Operating Systems,Room-A,4,0,2026-06-23,Evening
+6,1RV23CS104,ISHITHA BUSETTY,CS,Unknown,2,Operating Systems,Room-A,5,0,2026-06-23,Evening
+7,1RV23CS112,KIRAN KUMAR S,CS,Unknown,2,Operating Systems,Room-A,6,0,2026-06-23,Evening
+8,1RV23CS120,LOCHAN N S,CS,Unknown,2,Operating Systems,Room-A,7,0,2026-06-23,Evening
+9,1RV23CS305,SPOORTHY S,CS,Unknown,2,Operating Systems,Room-A,8,0,2026-06-23,Evening

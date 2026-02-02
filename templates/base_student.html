@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Student Portal{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/retro.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span>Student Portal</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('student_dashboard', student_id=student_id) }}" class="{% if request.endpoint == 'student_dashboard' %}active{% endif %}">
+                    <span class="icon">[=]</span>
+                    <span>Dashboard</span>
+                </a>
+                <hr class="divider">
+                <a href="{{ url_for('logout') }}">
+                    <span class="icon">[X]</span>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <span>[{% if category == 'success' %}OK{% elif category == 'danger' %}!!{% else %}**{% endif %}]</span>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

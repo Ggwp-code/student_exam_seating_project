@@ -1,0 +1,23 @@
+SeatNo,StudentID,Name,Department,Branch,Year,Subject,Room,Position_X,Position_Y,ExamDate,ExamTime
+1,1RV23CS062,BHARATH D,CS,Unknown,2,Python,Room-A,0,0,2025-06-20,Afternoon
+2,1RV23CS065,BHAVIN BHAT,CS,Unknown,2,Math,Room-A,1,0,2025-06-20,Afternoon
+3,1RV23CS068,BRAJESH PAI P N,CS,Unknown,2,Algorithms,Room-A,2,0,2025-06-20,Afternoon
+4,1RV23CS071,CHAITHANYA SHADAKSHARI,CS,Unknown,2,Design,Room-A,3,0,2025-06-20,Afternoon
+5,1RV23CS074,CHETAN M PATIL,CS,Unknown,2,Python,Room-A,4,0,2025-06-20,Afternoon
+6,1RV23CS077,CHIRAG SANDESH SHETTY,CS,Unknown,2,Math,Room-A,5,0,2025-06-20,Afternoon
+7,1RV23CS080,D DIVYASHREE,CS,Unknown,2,Algorithms,Room-A,6,0,2025-06-20,Afternoon
+8,1RV23CS083,DARSHAN CHAVAN,CS,Unknown,2,Design,Room-A,7,0,2025-06-20,Afternoon
+9,1RV23CS086,ESHANYE J,CS,Unknown,2,Python,Room-A,8,0,2025-06-20,Afternoon
+10,1RV23CS089,G C NIKHIL,CS,Unknown,2,Math,Room-A,9,0,2025-06-20,Afternoon
+11,1RV23CS092,GORLA RAHUL REDDY,CS,Unknown,2,Algorithms,Room-A,0,1,2025-06-20,Afternoon
+12,1RV23CS095,HARSH PATEL,CS,Unknown,2,Design,Room-A,1,1,2025-06-20,Afternoon
+13,1RV23CS098,HARSHITH KUMAR S B,CS,Unknown,2,Python,Room-A,2,1,2025-06-20,Afternoon
+14,1RV23CS101,IAN JEM,CS,Unknown,2,Math,Room-A,3,1,2025-06-20,Afternoon
+15,1RV23CS104,ISHITHA BUSETTY,CS,Unknown,2,Algorithms,Room-A,4,1,2025-06-20,Afternoon
+16,1RV23CS107,K MRUDULA REDDY,CS,Unknown,2,Design,Room-A,5,1,2025-06-20,Afternoon
+17,1RV23CS110,KAUSSHAL RAVIKUMAAR,CS,Unknown,2,Python,Room-A,6,1,2025-06-20,Afternoon
+18,1RV23CS114,KRISHANG REDDY,CS,Unknown,2,Math,Room-A,7,1,2025-06-20,Afternoon
+19,1RV23CS117,KUSHAL GOWDA C,CS,Unknown,2,Algorithms,Room-A,8,1,2025-06-20,Afternoon
+20,1RV23CS120,LOCHAN N S,CS,Unknown,2,Design,Room-A,9,1,2025-06-20,Afternoon
+21,1RV23CS307,MEDHA SANKETH,CS,Unknown,2,Math,Room-A,0,2,2025-06-20,Afternoon
+22,1RV24CS406,HARSHA G GOWDA,CS,Unknown,2,Python,Room-A,1,2,2025-06-20,Afternoon

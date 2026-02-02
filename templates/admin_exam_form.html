@@ -1,0 +1,94 @@
+{% extends "base_retro.html" %}
+
+{% block title %}{% if exam %}Edit{% else %}Add{% endif %} Exam - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[{% if exam %}~{% else %}+{% endif %}] {% if exam %}Edit Exam{% else %}New Exam{% endif %}</h1>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>[?] Exam Details</h3>
+    </div>
+    <div class="card-body">
+        <form method="post" action="{% if exam %}{{ url_for('edit_exam', exam_id=exam.id) }}{% else %}{{ url_for('add_exam') }}{% endif %}">
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="exam_code">Exam Code <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="exam_code" name="exam_code"
+                           value="{{ exam.exam_code if exam else '' }}"
+                           {% if exam %}readonly{% endif %}
+                           required placeholder="e.g., CS101-2025-MID">
+                    {% if exam %}
+                        <small class="text-muted">Exam code cannot be changed after creation.</small>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Exam Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="name" name="name"
+                           value="{{ exam.name if exam else '' }}"
+                           required placeholder="e.g., Data Structures Mid-term">
+                </div>
+
+                <div class="form-group">
+                    <label for="subject">Subject <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="subject" name="subject"
+                           value="{{ exam.subject if exam else '' }}"
+                           required placeholder="e.g., Data Structures and Algorithms">
+                </div>
+
+                <div class="form-group">
+                    <label for="department_id">Department</label>
+                    <select class="form-control" id="department_id" name="department_id">
+                        <option value="">-- Select Department (Optional) --</option>
+                        {% for dept in departments %}
+                            <option value="{{ dept.id }}"
+                                {% if exam and exam.department_id == dept.id %}selected{% endif %}>
+                                {{ dept.code }} - {{ dept.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="exam_date">Exam Date <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" id="exam_date" name="exam_date"
+                           value="{{ exam.exam_date.isoformat() if exam else '' }}"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="exam_time">Time Slot <span class="text-danger">*</span></label>
+                    <select class="form-control" id="exam_time" name="exam_time" required>
+                        <option value="">-- Select Time Slot --</option>
+                        {% for slot in time_slots %}
+                            <option value="{{ slot }}"
+                                {% if exam and exam.exam_time.value == slot %}selected{% endif %}>
+                                {{ slot }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="duration_minutes">Duration (minutes)</label>
+                    <input type="number" class="form-control" id="duration_minutes" name="duration_minutes"
+                           value="{{ exam.duration_minutes if exam else 180 }}"
+                           min="30" max="360" step="30">
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="flex-between">
+                <a href="{{ url_for('admin_exams') }}" class="btn">[<] Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    [OK] {% if exam %}Update{% else %}Create{% endif %} Exam
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

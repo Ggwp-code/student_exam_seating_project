@@ -1,0 +1,148 @@
+{% extends "base_retro.html" %}
+
+{% block title %}Swap Requests - Admin{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[A] Manage Swap Requests</h1>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn">[<] Back to Dashboard</a>
+</div>
+
+<!-- Pending Approval -->
+<div class="card mb-2">
+    <div class="card-header flex-between">
+        <h3>[!] Pending Admin Approval</h3>
+        <span class="badge badge-yellow">{{ requests|selectattr('status', 'equalto', 'teacher_accepted')|list|length }}</span>
+    </div>
+    <div class="card-body">
+        {% set pending = requests|selectattr('status', 'equalto', 'teacher_accepted')|list %}
+        {% if pending %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Requester</th>
+                    <th>Their Session</th>
+                    <th>Target</th>
+                    <th>Their Session</th>
+                    <th>Reason</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in pending %}
+                <tr>
+                    <td><strong>{{ req.requester }}</strong></td>
+                    <td>
+                        <span class="badge badge-blue">{{ req.requester_session.room }}</span><br>
+                        <span class="text-sm">{{ req.requester_session.date }} | {{ req.requester_session.time }}</span>
+                    </td>
+                    <td><strong>{{ req.target }}</strong></td>
+                    <td>
+                        <span class="badge badge-green">{{ req.target_session.room }}</span><br>
+                        <span class="text-sm">{{ req.target_session.date }} | {{ req.target_session.time }}</span>
+                    </td>
+                    <td class="text-sm">{{ req.reason or '-' }}</td>
+                    <td>
+                        <div style="display: flex; gap: 5px;">
+                            <form method="POST" action="{{ url_for('approve_swap_request', request_id=req.id) }}" style="display: inline;">
+                                <input type="hidden" name="admin_notes" value="">
+                                <button type="submit" class="btn btn-sm btn-success">[Y] Approve</button>
+                            </form>
+                            <button type="button" class="btn btn-sm btn-danger" onclick="showRejectModal({{ req.id }})">[N] Reject</button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">[OK]</div>
+            <p>No swap requests awaiting approval.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- All Requests History -->
+<div class="card">
+    <div class="card-header flex-between">
+        <h3>[#] All Swap Requests</h3>
+        <span class="badge badge-blue">{{ requests|length }} total</span>
+    </div>
+    <div class="card-body">
+        {% if requests %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Requester</th>
+                    <th>Target</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Reviewed</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in requests %}
+                <tr>
+                    <td>#{{ req.id }}</td>
+                    <td>{{ req.requester }}</td>
+                    <td>{{ req.target }}</td>
+                    <td>
+                        <span class="badge {% if req.status == 'approved' %}badge-green{% elif req.status == 'teacher_accepted' %}badge-blue{% elif req.status == 'pending' %}badge-yellow{% else %}badge-red{% endif %}">
+                            {{ req.status }}
+                        </span>
+                    </td>
+                    <td class="text-sm">{{ req.created_at }}</td>
+                    <td class="text-sm">
+                        {% if req.reviewed_at %}
+                        {{ req.reviewed_at }}<br>
+                        <span class="text-muted">by {{ req.reviewed_by }}</span>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">[?]</div>
+            <p>No swap requests found.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div id="rejectModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-primary); padding: 20px; border: 3px solid var(--border-color); min-width: 400px;">
+        <h3 style="margin-bottom: 15px;">[X] Reject Swap Request</h3>
+        <form id="rejectForm" method="POST">
+            <div class="form-group mb-2">
+                <label class="form-label">Reason for Rejection</label>
+                <textarea name="admin_notes" class="form-control" rows="3" placeholder="Explain why this swap cannot be approved..."></textarea>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="btn btn-danger">[X] Confirm Reject</button>
+                <button type="button" class="btn" onclick="hideRejectModal()">[<] Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showRejectModal(requestId) {
+    document.getElementById('rejectForm').action = '/admin/swap_requests/' + requestId + '/reject';
+    document.getElementById('rejectModal').style.display = 'block';
+}
+
+function hideRejectModal() {
+    document.getElementById('rejectModal').style.display = 'none';
+}
+</script>
+{% endblock %}

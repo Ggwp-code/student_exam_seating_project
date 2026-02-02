@@ -1,0 +1,41 @@
+SeatNo,StudentID,Name,Department,Branch,Year,Subject,Room,Position_X,Position_Y,ExamDate,ExamTime
+1,1RV23CS083,DARSHAN CHAVAN,CS,Unknown,2,All-Students-Test,Room-B,0,0,2026-06-25,Morning
+2,1RV23CS084,DILSHAD AHMED,CS,Unknown,2,All-Students-Test,Room-B,1,0,2026-06-25,Morning
+3,1RV23CS085,DISHANTH A M,CS,Unknown,2,All-Students-Test,Room-B,2,0,2026-06-25,Morning
+4,1RV23CS086,ESHANYE J,CS,Unknown,2,All-Students-Test,Room-B,3,0,2026-06-25,Morning
+5,1RV23CS087,ESHITHA CHOWDARY NATTEM,CS,Unknown,2,All-Students-Test,Room-B,4,0,2026-06-25,Morning
+6,1RV23CS088,ESHWAR M,CS,Unknown,2,All-Students-Test,Room-B,5,0,2026-06-25,Morning
+7,1RV23CS089,G C NIKHIL,CS,Unknown,2,All-Students-Test,Room-B,6,0,2026-06-25,Morning
+8,1RV23CS090,GAGAN B C,CS,Unknown,2,All-Students-Test,Room-B,7,0,2026-06-25,Morning
+9,1RV23CS091,GARVIT CHOUDHARY,CS,Unknown,2,All-Students-Test,Room-B,0,1,2026-06-25,Morning
+10,1RV23CS092,GORLA RAHUL REDDY,CS,Unknown,2,All-Students-Test,Room-B,1,1,2026-06-25,Morning
+11,1RV23CS093,GREESHMA S,CS,Unknown,2,All-Students-Test,Room-B,2,1,2026-06-25,Morning
+12,1RV23CS094,GUJAR ADVAY KIRAN,CS,Unknown,2,All-Students-Test,Room-B,3,1,2026-06-25,Morning
+13,1RV23CS095,HARSH PATEL,CS,Unknown,2,All-Students-Test,Room-B,4,1,2026-06-25,Morning
+14,1RV23CS096,HARSHIT RAJ,CS,Unknown,2,All-Students-Test,Room-B,5,1,2026-06-25,Morning
+15,1RV23CS097,HARSHIT VARMA,CS,Unknown,2,All-Students-Test,Room-B,6,1,2026-06-25,Morning
+16,1RV23CS098,HARSHITH KUMAR S B,CS,Unknown,2,All-Students-Test,Room-B,7,1,2026-06-25,Morning
+17,1RV23CS099,HEMANG SHRIKAR DESAI,CS,Unknown,2,All-Students-Test,Room-B,0,2,2026-06-25,Morning
+18,1RV23CS100,HITARTH MEHRA,CS,Unknown,2,All-Students-Test,Room-B,1,2,2026-06-25,Morning
+19,1RV23CS101,IAN JEM,CS,Unknown,2,All-Students-Test,Room-B,2,2,2026-06-25,Morning
+20,1RV23CS102,ISHAAN C,CS,Unknown,2,All-Students-Test,Room-B,3,2,2026-06-25,Morning
+21,1RV23CS103,ISHAN KUMAR,CS,Unknown,2,All-Students-Test,Room-B,4,2,2026-06-25,Morning
+22,1RV23CS104,ISHITHA BUSETTY,CS,Unknown,2,All-Students-Test,Room-B,5,2,2026-06-25,Morning
+23,1RV23CS105,JESTAKUMAR,CS,Unknown,2,All-Students-Test,Room-B,6,2,2026-06-25,Morning
+24,1RV23CS106,JETTI KAMALA,CS,Unknown,2,All-Students-Test,Room-B,7,2,2026-06-25,Morning
+25,1RV23CS107,K MRUDULA REDDY,CS,Unknown,2,All-Students-Test,Room-B,0,3,2026-06-25,Morning
+26,1RV23CS108,K SRUJAN,CS,Unknown,2,All-Students-Test,Room-B,1,3,2026-06-25,Morning
+27,1RV23CS109,KALIANPUR ROHITH,CS,Unknown,2,All-Students-Test,Room-B,2,3,2026-06-25,Morning
+28,1RV23CS110,KAUSSHAL RAVIKUMAAR,CS,Unknown,2,All-Students-Test,Room-B,3,3,2026-06-25,Morning
+29,1RV23CS111,KAVYASHREE B K,CS,Unknown,2,All-Students-Test,Room-B,4,3,2026-06-25,Morning
+30,1RV23CS112,KIRAN KUMAR S,CS,Unknown,2,All-Students-Test,Room-B,5,3,2026-06-25,Morning
+31,1RV23CS114,KRISHANG REDDY,CS,Unknown,2,All-Students-Test,Room-B,6,3,2026-06-25,Morning
+32,1RV23CS115,KRUTHIKA N,CS,Unknown,2,All-Students-Test,Room-B,7,3,2026-06-25,Morning
+33,1RV23CS116,KSHITIJ C,CS,Unknown,2,All-Students-Test,Room-B,0,4,2026-06-25,Morning
+34,1RV23CS117,KUSHAL GOWDA C,CS,Unknown,2,All-Students-Test,Room-B,1,4,2026-06-25,Morning
+35,1RV23CS118,LAKSHMI S D,CS,Unknown,2,All-Students-Test,Room-B,2,4,2026-06-25,Morning
+36,1RV23CS119,LAKSHYA SHARMA,CS,Unknown,2,All-Students-Test,Room-B,3,4,2026-06-25,Morning
+37,1RV23CS120,LOCHAN N S,CS,Unknown,2,All-Students-Test,Room-B,4,4,2026-06-25,Morning
+38,1RV23CS305,SPOORTHY S,CS,Unknown,2,All-Students-Test,Room-B,5,4,2026-06-25,Morning
+39,1RV23CS306,SAHANA MARKANDE,CS,Unknown,2,All-Students-Test,Room-B,6,4,2026-06-25,Morning
+40,1RV23CS307,MEDHA SANKETH,CS,Unknown,2,All-Students-Test,Room-B,7,4,2026-06-25,Morning

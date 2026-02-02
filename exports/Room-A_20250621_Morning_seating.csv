@@ -1,0 +1,21 @@
+SeatNo,StudentID,Name,Department,Branch,Year,Subject,Room,Position_X,Position_Y,ExamDate,ExamTime
+1,1RV23CS061,B M MANOHARA,CS,Unknown,2,Data Structures,Room-A,0,0,2025-06-21,Morning
+2,1RV23CS062,BHARATH D,CS,Unknown,2,Data Structures,Room-A,1,0,2025-06-21,Morning
+3,1RV23CS066,BHOOMIKA SUNDAR,CS,Unknown,2,Data Structures,Room-A,2,0,2025-06-21,Morning
+4,1RV23CS069,CHAHAK SRIVASTAVA,CS,Unknown,2,Computer Networks,Room-A,3,0,2025-06-21,Morning
+5,1RV23CS072,CHANDAN G,CS,Unknown,2,Data Structures,Room-A,4,0,2025-06-21,Morning
+6,1RV23CS074,CHETAN M PATIL,CS,Unknown,2,Computer Networks,Room-A,5,0,2025-06-21,Morning
+7,1RV23CS077,CHIRAG SANDESH SHETTY,CS,Unknown,2,Data Structures,Room-A,6,0,2025-06-21,Morning
+8,1RV23CS081,D RAKSHITHA,CS,Unknown,2,Computer Networks,Room-A,7,0,2025-06-21,Morning
+9,1RV23CS085,DISHANTH A M,CS,Unknown,2,Data Structures,Room-A,8,0,2025-06-21,Morning
+10,1RV23CS089,G C NIKHIL,CS,Unknown,2,Computer Networks,Room-A,9,0,2025-06-21,Morning
+11,1RV23CS092,GORLA RAHUL REDDY,CS,Unknown,2,Data Structures,Room-A,0,1,2025-06-21,Morning
+12,1RV23CS096,HARSHIT RAJ,CS,Unknown,2,Computer Networks,Room-A,1,1,2025-06-21,Morning
+13,1RV23CS100,HITARTH MEHRA,CS,Unknown,2,Data Structures,Room-A,2,1,2025-06-21,Morning
+14,1RV23CS104,ISHITHA BUSETTY,CS,Unknown,2,Computer Networks,Room-A,3,1,2025-06-21,Morning
+15,1RV23CS107,K MRUDULA REDDY,CS,Unknown,2,Data Structures,Room-A,4,1,2025-06-21,Morning
+16,1RV23CS111,KAVYASHREE B K,CS,Unknown,2,Computer Networks,Room-A,5,1,2025-06-21,Morning
+17,1RV23CS116,KSHITIJ C,CS,Unknown,2,Data Structures,Room-A,6,1,2025-06-21,Morning
+18,1RV23CS120,LOCHAN N S,CS,Unknown,2,Computer Networks,Room-A,7,1,2025-06-21,Morning
+19,1RV23CS306,SAHANA MARKANDE,CS,Unknown,2,Computer Networks,Room-A,8,1,2025-06-21,Morning
+20,1RV24CS406,HARSHA G GOWDA,CS,Unknown,2,Data Structures,Room-A,9,1,2025-06-21,Morning

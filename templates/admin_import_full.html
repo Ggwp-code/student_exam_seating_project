@@ -1,0 +1,84 @@
+{% extends "base_retro.html" %}
+
+{% block title %}Import Exam Data - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[^] Import Exam Data</h1>
+    <a href="{{ url_for('admin_import_export') }}" class="btn">[<] Back</a>
+</div>
+
+<div class="card mb-2">
+    <div class="card-header">
+        <h3>[?] About This Import</h3>
+    </div>
+    <div class="card-body">
+        <p>This is the <strong>comprehensive import</strong> that creates:</p>
+        <ul>
+            <li>Students (with department, branch, section)</li>
+            <li>Exams (auto-generated from subject + date + time)</li>
+            <li>Enrollments (links students to their exams)</li>
+        </ul>
+        <p class="text-muted">Use this when you have a complete exam schedule with student assignments.</p>
+    </div>
+</div>
+
+<div class="card mb-2">
+    <div class="card-header">
+        <h3>[>] Required Columns</h3>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Column</th>
+                    <th>Required</th>
+                    <th>Example</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><code>StudentID</code></td><td><span class="badge badge-red">Yes</span></td><td>1RV23CS061</td></tr>
+                <tr><td><code>Name</code></td><td><span class="badge badge-red">Yes</span></td><td>John Doe</td></tr>
+                <tr><td><code>Subject</code></td><td><span class="badge badge-red">Yes</span></td><td>Data Structures</td></tr>
+                <tr><td><code>ExamDate</code></td><td><span class="badge badge-red">Yes</span></td><td>2026-06-20</td></tr>
+                <tr><td><code>ExamTime</code></td><td><span class="badge badge-red">Yes</span></td><td>Morning / Afternoon / Evening</td></tr>
+                <tr><td><code>Department</code></td><td><span class="badge badge-gray">Optional</span></td><td>CS</td></tr>
+                <tr><td><code>Branch</code></td><td><span class="badge badge-gray">Optional</span></td><td>CSE</td></tr>
+                <tr><td><code>Section</code></td><td><span class="badge badge-gray">Optional</span></td><td>A</td></tr>
+                <tr><td><code>Year</code></td><td><span class="badge badge-gray">Optional</span></td><td>3</td></tr>
+                <tr><td><code>Semester</code></td><td><span class="badge badge-gray">Optional</span></td><td>6</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>[^] Upload File</h3>
+    </div>
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label class="form-label">[>] Select CSV or Excel File</label>
+                <input type="file" name="data_file" accept=".csv,.xlsx,.xls" required class="form-control">
+                <small class="text-muted">Supported formats: .csv, .xlsx, .xls</small>
+            </div>
+            <button type="submit" class="btn btn-primary">[^] Import Data</button>
+        </form>
+    </div>
+</div>
+
+<div class="card mt-2">
+    <div class="card-header">
+        <h3>[=] Sample CSV Format</h3>
+    </div>
+    <div class="card-body">
+        <pre style="background: #1a2a1a; padding: 1rem; border-radius: 4px; overflow-x: auto; font-size: 12px;">StudentID,Name,Department,Branch,Section,Year,Semester,Subject,ExamDate,ExamTime
+1RV23CS061,B M MANOHARA,CS,CSE,A,3,6,Data Structures,2026-06-20,Morning
+1RV23CS061,B M MANOHARA,CS,CSE,A,3,6,Database Systems,2026-06-21,Afternoon
+1RV23CS062,BHARATH D,CS,CSE,A,3,6,Data Structures,2026-06-20,Morning
+1RV23CS062,BHARATH D,CS,CSE,A,3,6,Database Systems,2026-06-21,Afternoon</pre>
+        <p class="text-sm text-muted mt-1">Note: Each row represents one student-exam enrollment. A student can appear multiple times for different exams.</p>
+    </div>
+</div>
+{% endblock %}

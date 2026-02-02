@@ -1,0 +1,145 @@
+{% extends "base_retro.html" %}
+
+{% block title %}Import/Export - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[~] Import / Export</h1>
+</div>
+
+<!-- Recommended: Full Import -->
+<div class="card mb-2" style="border: 2px solid var(--accent-green);">
+    <div class="card-header" style="background: var(--accent-green); color: white;">
+        <h3>[*] Recommended: Full Data Import</h3>
+    </div>
+    <div class="card-body">
+        <p>Import <strong>Students + Exams + Enrollments</strong> in a single file. This is the easiest way to set up your exam system.</p>
+        <p class="text-muted text-sm">Columns: StudentID, Name, Department, Branch, Section, Year, Semester, Subject, ExamDate, ExamTime</p>
+        <a href="{{ url_for('import_full_data') }}" class="btn btn-success btn-lg">[^] Full Import (Recommended)</a>
+    </div>
+</div>
+
+<!-- Individual Import Section -->
+<div class="card mb-2">
+    <div class="card-header">
+        <h3>[^] Individual Imports</h3>
+    </div>
+    <div class="card-body">
+        <div class="grid-2">
+            <div class="card" style="margin-bottom:0;">
+                <div class="card-body text-center">
+                    <div class="text-mono" style="font-size: 32px; color: var(--accent-blue);">[S]</div>
+                    <h4 class="mt-1">Students Only</h4>
+                    <p class="text-muted text-sm">Upload student roster without exam assignments</p>
+                    <a href="{{ url_for('import_students_excel') }}" class="btn btn-primary">[^] Import</a>
+                </div>
+            </div>
+            <div class="card" style="margin-bottom:0;">
+                <div class="card-body text-center">
+                    <div class="text-mono" style="font-size: 32px; color: var(--accent-purple);">[E]</div>
+                    <h4 class="mt-1">Exams Only</h4>
+                    <p class="text-muted text-sm">Upload exam schedule without students</p>
+                    <a href="{{ url_for('import_exams_excel') }}" class="btn">[^] Import</a>
+                </div>
+            </div>
+        </div>
+        <hr class="divider">
+        <div class="grid-2">
+            <div class="card" style="margin-bottom:0;">
+                <div class="card-body text-center">
+                    <div class="text-mono" style="font-size: 32px; color: var(--accent-yellow);">[+]</div>
+                    <h4 class="mt-1">Add Section</h4>
+                    <p class="text-muted text-sm">Quickly add students to a specific section</p>
+                    <a href="{{ url_for('add_students_by_section') }}" class="btn">[+] Add by Section</a>
+                </div>
+            </div>
+            <div class="card" style="margin-bottom:0;">
+                <div class="card-body text-center">
+                    <div class="text-mono" style="font-size: 32px; color: var(--accent-red);">[&]</div>
+                    <h4 class="mt-1">Friends</h4>
+                    <p class="text-muted text-sm">Upload CSV with friend pairs</p>
+                    <a href="{{ url_for('admin_relationships') }}" class="btn btn-danger">[^] Import</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Section -->
+<div class="card">
+    <div class="card-header">
+        <h3>[v] Export Data</h3>
+    </div>
+    <div class="card-body">
+        <div class="grid-3">
+            <div class="card" style="margin-bottom:0;">
+                <div class="card-body text-center">
+                    <div class="text-mono" style="font-size: 32px; color: var(--accent-blue);">[S]</div>
+                    <h4 class="mt-1">Students</h4>
+                    <p class="text-muted text-sm">Download all students as Excel</p>
+                    <a href="{{ url_for('export_students_excel') }}" class="btn">[v] Export</a>
+                </div>
+            </div>
+            <div class="card" style="margin-bottom:0;">
+                <div class="card-body text-center">
+                    <div class="text-mono" style="font-size: 32px; color: var(--accent-green);">[E]</div>
+                    <h4 class="mt-1">Exams</h4>
+                    <p class="text-muted text-sm">Download all exams as Excel</p>
+                    <a href="{{ url_for('export_exams_excel') }}" class="btn">[v] Export</a>
+                </div>
+            </div>
+            <div class="card" style="margin-bottom:0;">
+                <div class="card-body text-center">
+                    <div class="text-mono" style="font-size: 32px; color: var(--accent-purple);">[#]</div>
+                    <h4 class="mt-1">Seating</h4>
+                    <p class="text-muted text-sm">Export from exam page</p>
+                    <a href="{{ url_for('admin_exams') }}" class="btn">[>] Go to Exams</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- File Format Info -->
+<div class="card">
+    <div class="card-header">
+        <h3>[?] File Format Requirements</h3>
+    </div>
+    <div class="card-body">
+        <div class="grid-2">
+            <div>
+                <h4 class="mb-1">Students Import</h4>
+                <p class="text-sm text-muted mb-1">Columns:</p>
+                <table class="table" style="font-size: 12px;">
+                    <tr><td><code>StudentID</code></td><td><span class="badge badge-red">required</span></td></tr>
+                    <tr><td><code>Name</code></td><td><span class="badge badge-red">required</span></td></tr>
+                    <tr><td><code>Department</code></td><td><span class="badge badge-gray">optional</span></td></tr>
+                    <tr><td><code>Branch</code></td><td><span class="badge badge-gray">optional</span></td></tr>
+                    <tr><td><code>Year</code></td><td><span class="badge badge-gray">optional</span></td></tr>
+                    <tr><td><code>Semester</code></td><td><span class="badge badge-gray">optional</span></td></tr>
+                    <tr><td><code>Batch</code></td><td><span class="badge badge-gray">optional</span></td></tr>
+                    <tr><td><code>Email</code></td><td><span class="badge badge-gray">optional</span></td></tr>
+                    <tr><td><code>Gender</code></td><td><span class="badge badge-gray">optional</span></td></tr>
+                </table>
+            </div>
+            <div>
+                <h4 class="mb-1">Exams Import</h4>
+                <p class="text-sm text-muted mb-1">Columns:</p>
+                <table class="table" style="font-size: 12px;">
+                    <tr><td><code>ExamCode</code></td><td><span class="badge badge-red">required</span></td></tr>
+                    <tr><td><code>Name</code></td><td><span class="badge badge-red">required</span></td></tr>
+                    <tr><td><code>Subject</code></td><td><span class="badge badge-red">required</span></td></tr>
+                    <tr><td><code>ExamDate</code></td><td><span class="badge badge-red">required</span></td></tr>
+                    <tr><td><code>ExamTime</code></td><td><span class="badge badge-red">required</span></td></tr>
+                    <tr><td><code>Department</code></td><td><span class="badge badge-gray">optional</span></td></tr>
+                    <tr><td><code>Duration</code></td><td><span class="badge badge-gray">optional</span></td></tr>
+                </table>
+            </div>
+        </div>
+        <hr class="divider">
+        <p class="text-muted text-sm">
+            Supported formats: <code>.xlsx</code> <code>.xls</code> <code>.csv</code>
+        </p>
+    </div>
+</div>
+{% endblock %}

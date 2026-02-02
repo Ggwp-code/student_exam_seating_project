@@ -1,0 +1,18 @@
+SeatNo,StudentID,Name,Department,Branch,Year,Subject,Room,Position_X,Position_Y,ExamDate,ExamTime
+1,1RV23CS064,BHAVIKA BANDU,CS,Unknown,2,Computer Networks,Room-A,0,0,2026-06-21,Evening
+2,1RV23CS065,BHAVIN BHAT,CS,Unknown,2,Computer Networks,Room-A,1,0,2026-06-21,Evening
+3,1RV23CS071,CHAITHANYA SHADAKSHARI,CS,Unknown,2,Computer Networks,Room-A,2,0,2026-06-21,Evening
+4,1RV23CS076,CHIRAG A CHINTAAL,CS,Unknown,2,Computer Networks,Room-A,3,0,2026-06-21,Evening
+5,1RV23CS080,D DIVYASHREE,CS,Unknown,2,Data Structures,Room-A,4,0,2026-06-21,Evening
+6,1RV23CS084,DILSHAD AHMED,CS,Unknown,2,Computer Networks,Room-A,5,0,2026-06-21,Evening
+7,1RV23CS087,ESHITHA CHOWDARY NATTEM,CS,Unknown,2,Data Structures,Room-A,6,0,2026-06-21,Evening
+8,1RV23CS091,GARVIT CHOUDHARY,CS,Unknown,2,Computer Networks,Room-A,7,0,2026-06-21,Evening
+9,1RV23CS095,HARSH PATEL,CS,Unknown,2,Data Structures,Room-A,8,0,2026-06-21,Evening
+10,1RV23CS099,HEMANG SHRIKAR DESAI,CS,Unknown,2,Computer Networks,Room-A,9,0,2026-06-21,Evening
+11,1RV23CS102,ISHAAN C,CS,Unknown,2,Data Structures,Room-A,0,1,2026-06-21,Evening
+12,1RV23CS106,JETTI KAMALA,CS,Unknown,2,Computer Networks,Room-A,1,1,2026-06-21,Evening
+13,1RV23CS110,KAUSSHAL RAVIKUMAAR,CS,Unknown,2,Data Structures,Room-A,2,1,2026-06-21,Evening
+14,1RV23CS115,KRUTHIKA N,CS,Unknown,2,Computer Networks,Room-A,3,1,2026-06-21,Evening
+15,1RV23CS118,LAKSHMI S D,CS,Unknown,2,Data Structures,Room-A,4,1,2026-06-21,Evening
+16,1RV23CS307,MEDHA SANKETH,CS,Unknown,2,Data Structures,Room-A,5,1,2026-06-21,Evening
+17,1RV24CS405,GIRISH GOUDAR,CS,Unknown,2,Computer Networks,Room-A,6,1,2026-06-21,Evening

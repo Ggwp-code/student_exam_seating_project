@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Seating Dashboard</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f5f5; color: #333; }
+        header { background: #2c3e50; color: white; padding: 2rem; text-align: center; }
+        header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        header p { opacity: 0.8; }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        .session { background: white; border-radius: 8px; margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
+        .session-header { background: #34495e; color: white; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .session-header h2 { font-size: 1.25rem; }
+        .session-header .badge { background: #3498db; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.875rem; }
+        .session-body { padding: 1.5rem; }
+        .subjects { margin-bottom: 1rem; color: #666; }
+        .subjects span { background: #ecf0f1; padding: 0.25rem 0.5rem; border-radius: 4px; margin-right: 0.5rem; font-size: 0.875rem; }
+        .rooms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
+        .room-card { border: 1px solid #ddd; border-radius: 6px; padding: 1rem; transition: all 0.2s; }
+        .room-card:hover { border-color: #3498db; box-shadow: 0 2px 8px rgba(52,152,219,0.2); }
+        .room-card h3 { color: #2c3e50; margin-bottom: 0.5rem; }
+        .room-card .count { color: #666; font-size: 0.875rem; margin-bottom: 1rem; }
+        .room-card a { display: inline-block; background: #3498db; color: white; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; font-size: 0.875rem; }
+        .room-card a:hover { background: #2980b9; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .stat { background: white; padding: 1.5rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .stat-value { font-size: 2rem; font-weight: bold; color: #3498db; }
+        .stat-label { color: #666; font-size: 0.875rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Exam Seating Dashboard</h1>
+        <p>Seating arrangements organized by exam session</p>
+    </header>
+    <div class="container">
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value">32</div>
+                <div class="stat-label">Exam Sessions</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">36</div>
+                <div class="stat-label">Room Assignments</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">479</div>
+                <div class="stat-label">Total Seats Assigned</div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2025-06-20 - Morning</h2>
+                <span class="badge">23 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Algorithms</span> <span>Design</span> <span>Math</span> <span>Python</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">22 students assigned</div>
+                        <a href="Room-A_20250620_Morning.html" target="_blank">View Seating</a>
+                    </div>
+
+                    <div class="room-card">
+                        <h3>Room-B</h3>
+                        <div class="count">1 students assigned</div>
+                        <a href="Room-B_20250620_Morning.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2025-06-20 - Afternoon</h2>
+                <span class="badge">22 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Algorithms</span> <span>Design</span> <span>Math</span> <span>Python</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">22 students assigned</div>
+                        <a href="Room-A_20250620_Afternoon.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2025-06-20 - Evening</h2>
+                <span class="badge">22 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Algorithms</span> <span>Design</span> <span>Math</span> <span>Python</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">22 students assigned</div>
+                        <a href="Room-A_20250620_Evening.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2025-06-21 - Morning</h2>
+                <span class="badge">20 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Computer Networks</span> <span>Data Structures</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">20 students assigned</div>
+                        <a href="Room-A_20250621_Morning.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2025-06-21 - Afternoon</h2>
+                <span class="badge">16 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Computer Networks</span> <span>Data Structures</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">16 students assigned</div>
+                        <a href="Room-A_20250621_Afternoon.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2025-06-21 - Evening</h2>
+                <span class="badge">17 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Computer Networks</span> <span>Data Structures</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">17 students assigned</div>
+                        <a href="Room-A_20250621_Evening.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2025-06-22 - Morning</h2>
+                <span class="badge">10 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Database Systems</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">10 students assigned</div>
+                        <a href="Room-A_20250622_Morning.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2025-06-22 - Afternoon</h2>
+                <span class="badge">10 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Database Systems</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">10 students assigned</div>
+                        <a href="Room-A_20250622_Afternoon.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2025-06-22 - Evening</h2>
+                <span class="badge">8 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Database Systems</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">8 students assigned</div>
+                        <a href="Room-A_20250622_Evening.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2025-06-23 - Morning</h2>
+                <span class="badge">11 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Operating Systems</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">11 students assigned</div>
+                        <a href="Room-A_20250623_Morning.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2025-06-23 - Afternoon</h2>
+                <span class="badge">7 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Operating Systems</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">7 students assigned</div>
+                        <a href="Room-A_20250623_Afternoon.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2025-06-23 - Evening</h2>
+                <span class="badge">9 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Operating Systems</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">9 students assigned</div>
+                        <a href="Room-A_20250623_Evening.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2025-06-24 - Morning</h2>
+                <span class="badge">11 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Software Engineering</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">11 students assigned</div>
+                        <a href="Room-A_20250624_Morning.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2025-06-24 - Afternoon</h2>
+                <span class="badge">7 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Software Engineering</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">7 students assigned</div>
+                        <a href="Room-A_20250624_Afternoon.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2025-06-24 - Evening</h2>
+                <span class="badge">8 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Software Engineering</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">8 students assigned</div>
+                        <a href="Room-A_20250624_Evening.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2026-01-11 - Morning</h2>
+                <span class="badge">10 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>D.S.A</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">10 students assigned</div>
+                        <a href="Room-A_20260111_Morning.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2026-06-20 - Morning</h2>
+                <span class="badge">23 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Algorithms</span> <span>Design</span> <span>Math</span> <span>Python</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">22 students assigned</div>
+                        <a href="Room-A_20260620_Morning.html" target="_blank">View Seating</a>
+                    </div>
+
+                    <div class="room-card">
+                        <h3>Room-B</h3>
+                        <div class="count">1 students assigned</div>
+                        <a href="Room-B_20260620_Morning.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2026-06-20 - Afternoon</h2>
+                <span class="badge">22 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Algorithms</span> <span>Design</span> <span>Math</span> <span>Python</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">22 students assigned</div>
+                        <a href="Room-A_20260620_Afternoon.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2026-06-20 - Evening</h2>
+                <span class="badge">22 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Algorithms</span> <span>Design</span> <span>Math</span> <span>Python</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">22 students assigned</div>
+                        <a href="Room-A_20260620_Evening.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2026-06-21 - Morning</h2>
+                <span class="badge">20 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Computer Networks</span> <span>Data Structures</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">20 students assigned</div>
+                        <a href="Room-A_20260621_Morning.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2026-06-21 - Afternoon</h2>
+                <span class="badge">16 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Computer Networks</span> <span>Data Structures</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">16 students assigned</div>
+                        <a href="Room-A_20260621_Afternoon.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2026-06-21 - Evening</h2>
+                <span class="badge">17 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Computer Networks</span> <span>Data Structures</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">17 students assigned</div>
+                        <a href="Room-A_20260621_Evening.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2026-06-22 - Morning</h2>
+                <span class="badge">10 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Database Systems</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">10 students assigned</div>
+                        <a href="Room-A_20260622_Morning.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2026-06-22 - Afternoon</h2>
+                <span class="badge">10 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Database Systems</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">10 students assigned</div>
+                        <a href="Room-A_20260622_Afternoon.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2026-06-22 - Evening</h2>
+                <span class="badge">8 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Database Systems</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">8 students assigned</div>
+                        <a href="Room-A_20260622_Evening.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2026-06-23 - Morning</h2>
+                <span class="badge">11 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Operating Systems</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">11 students assigned</div>
+                        <a href="Room-A_20260623_Morning.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2026-06-23 - Afternoon</h2>
+                <span class="badge">7 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Operating Systems</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">7 students assigned</div>
+                        <a href="Room-A_20260623_Afternoon.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2026-06-23 - Evening</h2>
+                <span class="badge">9 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Operating Systems</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">9 students assigned</div>
+                        <a href="Room-A_20260623_Evening.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2026-06-24 - Morning</h2>
+                <span class="badge">11 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Software Engineering</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">11 students assigned</div>
+                        <a href="Room-A_20260624_Morning.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2026-06-24 - Afternoon</h2>
+                <span class="badge">7 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Software Engineering</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">7 students assigned</div>
+                        <a href="Room-A_20260624_Afternoon.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2026-06-24 - Evening</h2>
+                <span class="badge">8 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>Software Engineering</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">8 students assigned</div>
+                        <a href="Room-A_20260624_Evening.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="session">
+            <div class="session-header">
+                <h2>2026-06-25 - Morning</h2>
+                <span class="badge">67 students</span>
+            </div>
+            <div class="session-body">
+                <div class="subjects">
+                    Subjects: <span>All-Students-Test</span>
+                </div>
+                <div class="rooms-grid">
+
+                    <div class="room-card">
+                        <h3>Room-A</h3>
+                        <div class="count">22 students assigned</div>
+                        <a href="Room-A_20260625_Morning.html" target="_blank">View Seating</a>
+                    </div>
+
+                    <div class="room-card">
+                        <h3>Room-B</h3>
+                        <div class="count">40 students assigned</div>
+                        <a href="Room-B_20260625_Morning.html" target="_blank">View Seating</a>
+                    </div>
+
+                    <div class="room-card">
+                        <h3>Room-C</h3>
+                        <div class="count">5 students assigned</div>
+                        <a href="Room-C_20260625_Morning.html" target="_blank">View Seating</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

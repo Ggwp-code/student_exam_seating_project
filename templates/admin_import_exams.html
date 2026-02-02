@@ -1,0 +1,110 @@
+{% extends "base_retro.html" %}
+
+{% block title %}Import Exams - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[^] Import Exams</h1>
+</div>
+
+<div class="grid-2">
+    <div class="card">
+        <div class="card-header">
+            <h3>[F] Upload File</h3>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" id="uploadForm">
+                <div class="drop-zone" id="dropZone">
+                    <div class="text-mono" style="font-size: 48px; color: var(--accent-green);">[^]</div>
+                    <h4 class="mt-1">Drag & Drop your file here</h4>
+                    <p class="text-muted text-sm">or click to browse</p>
+                    <input type="file" name="excel_file" id="fileInput"
+                           accept=".xlsx,.xls,.csv" style="display:none;" required>
+                    <p id="fileName" class="text-success mt-1 text-mono"></p>
+                </div>
+
+                <div class="flex-between mt-2">
+                    <a href="{{ url_for('admin_import_export') }}" class="btn">[<] Back</a>
+                    <button type="submit" class="btn btn-success" id="uploadBtn" disabled>
+                        [^] Import Exams
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header" style="background: var(--accent-green); color: white;">
+            <h3>[?] File Format</h3>
+        </div>
+        <div class="card-body">
+            <p class="text-muted text-sm mb-1">Your file should have these columns:</p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Column</th>
+                        <th>Required</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>ExamCode</code></td><td><span class="badge badge-red">required</span></td></tr>
+                    <tr><td><code>Name</code></td><td><span class="badge badge-red">required</span></td></tr>
+                    <tr><td><code>Subject</code></td><td><span class="badge badge-red">required</span></td></tr>
+                    <tr><td><code>ExamDate</code></td><td><span class="badge badge-red">required</span></td></tr>
+                    <tr><td><code>ExamTime</code></td><td><span class="badge badge-red">required</span></td></tr>
+                    <tr><td><code>Department</code></td><td><span class="badge badge-gray">optional</span></td></tr>
+                    <tr><td><code>Duration</code></td><td><span class="badge badge-gray">optional</span></td></tr>
+                </tbody>
+            </table>
+            <hr class="divider">
+            <p class="text-muted text-sm">
+                [*] ExamTime must be: <code>Morning</code>, <code>Afternoon</code>, or <code>Evening</code>
+            </p>
+            <p class="text-muted text-sm">
+                [*] ExamDate format: <code>YYYY-MM-DD</code>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const fileName = document.getElementById('fileName');
+    const uploadBtn = document.getElementById('uploadBtn');
+
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = 'var(--accent-green)';
+        dropZone.style.background = 'rgba(52, 168, 83, 0.1)';
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.style.borderColor = '';
+        dropZone.style.background = '';
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = '';
+        dropZone.style.background = '';
+        if (e.dataTransfer.files.length) {
+            fileInput.files = e.dataTransfer.files;
+            updateFileName();
+        }
+    });
+
+    fileInput.addEventListener('change', updateFileName);
+
+    function updateFileName() {
+        if (fileInput.files.length) {
+            fileName.textContent = '> ' + fileInput.files[0].name;
+            uploadBtn.disabled = false;
+        }
+    }
+</script>
+{% endblock %}

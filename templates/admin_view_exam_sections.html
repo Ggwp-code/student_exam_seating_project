@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Sections - {{ exam.exam_code }}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <span class="text-xl font-semibold">Exam: {{ exam.exam_code }}</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{{ url_for('admin_manage_exams') }}" class="text-gray-600 hover:text-gray-900">Back to Manage Exams</a>
+                    <a href="{{ url_for('admin_dashboard') }}" class="text-gray-600 hover:text-gray-900">Dashboard</a>
+                    <a href="{{ url_for('logout') }}" class="text-red-600 hover:text-red-700">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <!-- Exam Details -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h1 class="text-2xl font-bold text-gray-900 mb-4">{{ exam.name }}</h1>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                    <span class="text-gray-500">Subject:</span>
+                    <p class="font-medium">{{ exam.subject }}</p>
+                </div>
+                <div>
+                    <span class="text-gray-500">Date:</span>
+                    <p class="font-medium">{{ exam.exam_date }}</p>
+                </div>
+                <div>
+                    <span class="text-gray-500">Time:</span>
+                    <p class="font-medium">{{ exam.exam_time.value if exam.exam_time else 'N/A' }}</p>
+                </div>
+                <div>
+                    <span class="text-gray-500">Total Students:</span>
+                    <p class="font-medium">{{ exam.total_students or 0 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assigned Sections -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4 text-gray-900">Assigned Sections</h2>
+            {% if assignments %}
+                <div class="flex flex-wrap gap-3">
+                    {% for assignment in assignments %}
+                    <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg flex items-center">
+                        <span class="font-medium">{{ assignment.department_code }} - {{ assignment.branch }} - {{ assignment.section }}</span>
+                        <a href="{{ url_for('admin_remove_section_assignment', assignment_id=assignment.id) }}"
+                           class="ml-3 text-red-600 hover:text-red-800"
+                           onclick="return confirm('Remove this section from the exam?')">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-500">No sections assigned to this exam yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- Enrolled Students -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold mb-4 text-gray-900">Enrolled Students ({{ students|length }})</h2>
+            {% if students %}
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-700">
+                        <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
+                            <tr>
+                                <th class="px-4 py-3">#</th>
+                                <th class="px-4 py-3">Student ID</th>
+                                <th class="px-4 py-3">Name</th>
+                                <th class="px-4 py-3">Branch</th>
+                                <th class="px-4 py-3">Section</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            {% for student in students %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3">{{ loop.index }}</td>
+                                <td class="px-4 py-3 font-medium">{{ student.student_id }}</td>
+                                <td class="px-4 py-3">{{ student.name }}</td>
+                                <td class="px-4 py-3">{{ student.branch or 'N/A' }}</td>
+                                <td class="px-4 py-3">{{ student.section or 'N/A' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-gray-500">No students enrolled in this exam yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+</body>
+</html>

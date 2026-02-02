@@ -1,0 +1,23 @@
+SeatNo,StudentID,Name,Department,Branch,Year,Subject,Room,Position_X,Position_Y,ExamDate,ExamTime
+1,1RV23CS061,B M MANOHARA,CS,Unknown,2,All-Students-Test,Room-A,0,0,2026-06-25,Morning
+2,1RV23CS062,BHARATH D,CS,Unknown,2,All-Students-Test,Room-A,1,0,2026-06-25,Morning
+3,1RV23CS063,BHAVAN TIMMAPPA GOND,CS,Unknown,2,All-Students-Test,Room-A,2,0,2026-06-25,Morning
+4,1RV23CS064,BHAVIKA BANDU,CS,Unknown,2,All-Students-Test,Room-A,3,0,2026-06-25,Morning
+5,1RV23CS065,BHAVIN BHAT,CS,Unknown,2,All-Students-Test,Room-A,4,0,2026-06-25,Morning
+6,1RV23CS066,BHOOMIKA SUNDAR,CS,Unknown,2,All-Students-Test,Room-A,5,0,2026-06-25,Morning
+7,1RV23CS067,BONAGIRI RAMA KRISHNA VIVEK,CS,Unknown,2,All-Students-Test,Room-A,6,0,2026-06-25,Morning
+8,1RV23CS068,BRAJESH PAI P N,CS,Unknown,2,All-Students-Test,Room-A,7,0,2026-06-25,Morning
+9,1RV23CS069,CHAHAK SRIVASTAVA,CS,Unknown,2,All-Students-Test,Room-A,8,0,2026-06-25,Morning
+10,1RV23CS070,CHAITHANYA B,CS,Unknown,2,All-Students-Test,Room-A,9,0,2026-06-25,Morning
+11,1RV23CS071,CHAITHANYA SHADAKSHARI,CS,Unknown,2,All-Students-Test,Room-A,0,1,2026-06-25,Morning
+12,1RV23CS072,CHANDAN G,CS,Unknown,2,All-Students-Test,Room-A,1,1,2026-06-25,Morning
+13,1RV23CS073,CHANDANA M N,CS,Unknown,2,All-Students-Test,Room-A,2,1,2026-06-25,Morning
+14,1RV23CS074,CHETAN M PATIL,CS,Unknown,2,All-Students-Test,Room-A,3,1,2026-06-25,Morning
+15,1RV23CS075,CHHAVI PAREEK,CS,Unknown,2,All-Students-Test,Room-A,4,1,2026-06-25,Morning
+16,1RV23CS076,CHIRAG A CHINTAAL,CS,Unknown,2,All-Students-Test,Room-A,5,1,2026-06-25,Morning
+17,1RV23CS077,CHIRAG SANDESH SHETTY,CS,Unknown,2,All-Students-Test,Room-A,6,1,2026-06-25,Morning
+18,1RV23CS078,CHIRANTHAN K,CS,Unknown,2,All-Students-Test,Room-A,7,1,2026-06-25,Morning
+19,1RV23CS079,CHITKALA PATIL,CS,Unknown,2,All-Students-Test,Room-A,8,1,2026-06-25,Morning
+20,1RV23CS080,D DIVYASHREE,CS,Unknown,2,All-Students-Test,Room-A,9,1,2026-06-25,Morning
+21,1RV23CS081,D RAKSHITHA,CS,Unknown,2,All-Students-Test,Room-A,0,2,2026-06-25,Morning
+22,1RV23CS082,DAIVIK SHENOY,CS,Unknown,2,All-Students-Test,Room-A,1,2,2026-06-25,Morning

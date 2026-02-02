@@ -1,0 +1,6 @@
+RoomID,Capacity,MaxSubjects,MaxBranches,AllowedYears
+Room-A,50,3,5,2
+Room-B,40,2,3,3
+Room-C,60,4,4,1
+Room-D,35,2,2,4
+

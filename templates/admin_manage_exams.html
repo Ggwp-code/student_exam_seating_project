@@ -1,0 +1,311 @@
+{% extends "base_retro.html" %}
+
+{% block title %}Manage Exams & Students - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[+] Manage Exams & Students</h1>
+</div>
+
+<!-- Statistics -->
+<div class="grid-3 mb-2">
+    <div class="card text-center">
+        <div class="card-body">
+            <div class="stat-value text-primary">{{ exams|length }}</div>
+            <div class="stat-label">Total Exams</div>
+        </div>
+    </div>
+    <div class="card text-center">
+        <div class="card-body">
+            <div class="stat-value text-success">{{ sections|length }}</div>
+            <div class="stat-label">Available Sections</div>
+        </div>
+    </div>
+    <div class="card text-center">
+        <div class="card-body">
+            <div class="stat-value" style="color: var(--accent-purple);">{{ assignments|length }}</div>
+            <div class="stat-label">Section Assignments</div>
+        </div>
+    </div>
+</div>
+
+<!-- Create New Exam -->
+<div class="card mb-2">
+    <div class="card-header">
+        <h3>[E] Create New Exam</h3>
+    </div>
+    <div class="card-body">
+        <form action="{{ url_for('admin_create_exam') }}" method="POST">
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">[>] Exam Code <span class="text-danger">*</span></label>
+                    <input type="text" name="exam_code" required placeholder="e.g., CSE-DS-2025-JUN" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">[>] Exam Name <span class="text-danger">*</span></label>
+                    <input type="text" name="exam_name" required placeholder="e.g., Data Structures Mid-Term" class="form-control">
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">[>] Subject <span class="text-danger">*</span></label>
+                    <input type="text" name="subject" required placeholder="e.g., Data Structures" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">[>] Duration (minutes)</label>
+                    <input type="number" name="duration" value="180" min="30" max="360" class="form-control">
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">[>] Exam Date <span class="text-danger">*</span></label>
+                    <input type="date" name="exam_date" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">[>] Exam Time <span class="text-danger">*</span></label>
+                    <select name="exam_time" required class="form-control">
+                        <option value="Morning">Morning (9:00 AM - 12:00 PM)</option>
+                        <option value="Afternoon">Afternoon (1:00 PM - 4:00 PM)</option>
+                        <option value="Evening">Evening (5:00 PM - 8:00 PM)</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success">[+] Create Exam</button>
+        </form>
+    </div>
+</div>
+
+<!-- Assign Sections to Exam (Multi-Select) -->
+<div class="card mb-2">
+    <div class="card-header flex-between">
+        <h3>[S] Assign Sections to Exam</h3>
+        <span class="text-sm text-muted">Select multiple sections at once</span>
+    </div>
+    <div class="card-body">
+        <form action="{{ url_for('admin_assign_sections_bulk') }}" method="POST" id="bulkAssignForm">
+            <div class="form-group">
+                <label class="form-label">[>] Select Exam <span class="text-danger">*</span></label>
+                <select name="exam_id" id="examSelect" required class="form-control">
+                    <option value="">-- Select an Exam --</option>
+                    {% for exam in exams %}
+                        <option value="{{ exam.id }}">{{ exam.exam_code }} - {{ exam.subject }} ({{ exam.exam_date }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">[>] Select Sections</label>
+                <div class="flex gap-1 mb-1">
+                    <button type="button" onclick="selectAllSections()" class="btn btn-sm">[+] Select All</button>
+                    <button type="button" onclick="deselectAllSections()" class="btn btn-sm">[-] Deselect All</button>
+                </div>
+
+                <div class="sections-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; max-height: 400px; overflow-y: auto; padding: 8px; border: 1px solid #3a4a3a; border-radius: 4px;">
+                    {% for dept_branch, sects in sections_grouped.items() %}
+                    <div class="section-group" style="background: #2a3a2a; padding: 12px; border-radius: 4px;">
+                        <div class="flex-between mb-1">
+                            <strong style="color: #8ab88a;">{{ dept_branch }}</strong>
+                            <button type="button" onclick="toggleGroup('{{ dept_branch }}')" class="btn btn-sm" style="font-size: 10px;">Toggle</button>
+                        </div>
+                        {% for sec in sects %}
+                        <label class="section-checkbox" style="display: flex; align-items: center; gap: 8px; padding: 6px; cursor: pointer; border-radius: 4px;"
+                               onmouseover="this.style.background='#3a4a3a'" onmouseout="this.style.background='transparent'">
+                            <input type="checkbox" name="sections" value="{{ sec.department }}|{{ sec.branch }}|{{ sec.section }}" class="section-check" data-group="{{ dept_branch }}">
+                            <span>Section {{ sec.section }}</span>
+                            <span class="badge badge-gray" style="margin-left: auto;">{{ sec.student_count }} students</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">[?] No sections available. Import student data first.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div id="selectionPreview" class="alert alert-info mt-1" style="display: none;">
+                <span>[*]</span> Selected: <strong id="selectedCount">0</strong> sections
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-1">[+] Assign Selected Sections to Exam</button>
+        </form>
+    </div>
+</div>
+
+<!-- Existing Exams Table -->
+<div class="card mb-2">
+    <div class="card-header flex-between">
+        <h3>[E] Existing Exams</h3>
+        <span class="badge badge-blue">{{ exams|length }} exams</span>
+    </div>
+    <div class="card-body">
+        {% if exams %}
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Exam Code</th>
+                        <th>Subject</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Enrolled</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for exam in exams %}
+                    <tr>
+                        <td><code>{{ exam.exam_code }}</code></td>
+                        <td>{{ exam.subject }}</td>
+                        <td class="text-mono">{{ exam.exam_date }}</td>
+                        <td>
+                            <span class="badge badge-{% if exam.exam_time.value == 'Morning' %}yellow{% elif exam.exam_time.value == 'Afternoon' %}blue{% else %}purple{% endif %}">
+                                {{ exam.exam_time.value }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge badge-green">{{ exam.total_students or 0 }} students</span>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{{ url_for('admin_view_exam_sections', exam_id=exam.id) }}" class="btn btn-sm" title="View Sections">[>]</a>
+                                <button onclick="confirmDeleteExam({{ exam.id }}, '{{ exam.exam_code }}')" class="btn btn-sm btn-danger" title="Delete">[x]</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center">[?] No exams created yet. Use the form above to create your first exam.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Section-Exam Assignments -->
+<div class="card mb-2">
+    <div class="card-header flex-between">
+        <h3>[&] Section-Exam Assignments</h3>
+        <span class="badge badge-purple">{{ assignments|length }} assignments</span>
+    </div>
+    <div class="card-body">
+        {% if assignments %}
+        <div class="table-container" style="max-height: 400px; overflow-y: auto;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Section</th>
+                        <th>Exam</th>
+                        <th>Assigned On</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for assignment in assignments %}
+                    <tr>
+                        <td>
+                            <span class="badge badge-blue">{{ assignment.department_code }}-{{ assignment.branch }}-{{ assignment.section }}</span>
+                        </td>
+                        <td>{{ assignment.exam.exam_code if assignment.exam else 'N/A' }} - {{ assignment.exam.subject if assignment.exam else '' }}</td>
+                        <td><code class="text-sm">{{ assignment.assigned_at.strftime('%Y-%m-%d %H:%M') if assignment.assigned_at else 'N/A' }}</code></td>
+                        <td>
+                            <button onclick="confirmRemoveAssignment({{ assignment.id }})" class="btn btn-sm btn-danger">[x]</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center">[?] No section assignments yet. Use the form above to assign sections to exams.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Delete Exam Modal -->
+<div id="deleteExamModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+        <div class="card" style="width: 400px;">
+            <div class="card-header">
+                <h3>[!] Confirm Deletion</h3>
+            </div>
+            <div class="card-body">
+                <p>Are you sure you want to delete exam <strong id="deleteExamCode"></strong>?</p>
+                <p class="text-muted text-sm">All enrollments will be removed. This action cannot be undone.</p>
+                <div class="flex-between mt-2">
+                    <button onclick="closeDeleteExamModal()" class="btn">[<] Cancel</button>
+                    <button onclick="executeDeleteExam()" class="btn btn-danger">[x] Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Section selection functions
+    function selectAllSections() {
+        document.querySelectorAll('.section-check').forEach(cb => cb.checked = true);
+        updateSelectionPreview();
+    }
+
+    function deselectAllSections() {
+        document.querySelectorAll('.section-check').forEach(cb => cb.checked = false);
+        updateSelectionPreview();
+    }
+
+    function toggleGroup(groupName) {
+        const checkboxes = document.querySelectorAll(`.section-check[data-group="${groupName}"]`);
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        checkboxes.forEach(cb => cb.checked = !allChecked);
+        updateSelectionPreview();
+    }
+
+    function updateSelectionPreview() {
+        const count = document.querySelectorAll('.section-check:checked').length;
+        const preview = document.getElementById('selectionPreview');
+        document.getElementById('selectedCount').textContent = count;
+        preview.style.display = count > 0 ? 'block' : 'none';
+    }
+
+    // Attach change listeners to all checkboxes
+    document.querySelectorAll('.section-check').forEach(cb => {
+        cb.addEventListener('change', updateSelectionPreview);
+    });
+
+    // Delete Exam Modal
+    let deleteExamId = null;
+
+    function confirmDeleteExam(examId, examCode) {
+        document.getElementById('deleteExamCode').textContent = examCode;
+        deleteExamId = examId;
+        document.getElementById('deleteExamModal').style.display = 'block';
+    }
+
+    function closeDeleteExamModal() {
+        document.getElementById('deleteExamModal').style.display = 'none';
+        deleteExamId = null;
+    }
+
+    function executeDeleteExam() {
+        if (deleteExamId) {
+            window.location.href = '/admin/delete_exam/' + deleteExamId;
+        }
+    }
+
+    function confirmRemoveAssignment(assignmentId) {
+        if (confirm('Remove this section assignment? Students will be unenrolled.')) {
+            window.location.href = '/admin/remove_section_assignment/' + assignmentId;
+        }
+    }
+
+    document.getElementById('deleteExamModal').addEventListener('click', function(e) {
+        if (e.target === this) closeDeleteExamModal();
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeDeleteExamModal();
+    });
+</script>
+{% endblock %}

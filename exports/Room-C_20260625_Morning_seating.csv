@@ -1,0 +1,6 @@
+SeatNo,StudentID,Name,Department,Branch,Year,Subject,Room,Position_X,Position_Y,ExamDate,ExamTime
+1,1RV24CS405,GIRISH GOUDAR,CS,Unknown,2,All-Students-Test,Room-C,0,0,2026-06-25,Morning
+2,1RV24CS406,HARSHA G GOWDA,CS,Unknown,2,All-Students-Test,Room-C,1,0,2026-06-25,Morning
+3,1RV24CS407,HARSHITHA NAIK K,CS,Unknown,2,All-Students-Test,Room-C,2,0,2026-06-25,Morning
+4,1RV24CS408,JEETENDRA K,CS,Unknown,2,All-Students-Test,Room-C,3,0,2026-06-25,Morning
+5,1RV24CS426,CHETHAN GOWDA,CS,Unknown,2,All-Students-Test,Room-C,4,0,2026-06-25,Morning

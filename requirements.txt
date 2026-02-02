@@ -1,0 +1,22 @@
+# Flask and extensions
+flask>=2.0.0
+flask-sqlalchemy>=3.0.0
+flask-migrate>=4.0.0
+
+# Database
+psycopg2-binary>=2.9.0
+pandas>=1.5.0
+
+# Authentication
+werkzeug>=2.0.0
+pyotp>=2.8.0
+qrcode[pil]>=7.0
+
+# Graph algorithms
+networkx>=2.8.0
+
+# Excel support
+openpyxl>=3.1.0
+
+# Utilities
+python-dotenv>=1.0.0

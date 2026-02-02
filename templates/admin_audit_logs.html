@@ -1,0 +1,106 @@
+{% extends "base_retro.html" %}
+
+{% block title %}Audit Logs - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[>] Audit Logs</h1>
+</div>
+
+{% if fallback %}
+<div class="alert alert-warning mb-2">
+    <span>[!]</span> PostgreSQL not configured. Audit logs require PostgreSQL database setup.
+</div>
+{% endif %}
+
+<!-- Filters -->
+<div class="card mb-2">
+    <div class="card-body">
+        <form method="GET" style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>Action</label>
+                <select name="action" class="form-control">
+                    <option value="">All Actions</option>
+                    {% for action in actions %}
+                    <option value="{{ action }}" {% if current_action == action %}selected{% endif %}>{{ action }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>Table</label>
+                <select name="table" class="form-control">
+                    <option value="">All Tables</option>
+                    {% for table in tables %}
+                    <option value="{{ table }}" {% if current_table == table %}selected{% endif %}>{{ table }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">[?] Filter</button>
+            <a href="{{ url_for('admin_audit_logs') }}" class="btn">[x] Clear</a>
+        </form>
+    </div>
+</div>
+
+<!-- Logs Table -->
+<div class="card">
+    <div class="card-header">
+        <h3>[*] Log Entries</h3>
+    </div>
+    <div class="card-body">
+        {% if logs and logs.items %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th>Table</th>
+                    <th>Record ID</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs.items %}
+                <tr>
+                    <td><code class="text-sm">{{ log.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</code></td>
+                    <td>{{ log.username or 'system' }}</td>
+                    <td>
+                        <span class="badge badge-{% if log.action.value == 'CREATE' %}green{% elif log.action.value == 'UPDATE' %}blue{% elif log.action.value == 'DELETE' %}red{% elif log.action.value == 'LOGIN' %}purple{% else %}gray{% endif %}">
+                            {{ log.action.value }}
+                        </span>
+                    </td>
+                    <td><code>{{ log.table_name or '-' }}</code></td>
+                    <td>{{ log.record_id or '-' }}</td>
+                    <td>
+                        {% if log.new_values %}
+                        <button onclick="alert('Details for log #{{ log.id }}')" class="btn btn-sm">[O]</button>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="flex-between mt-2">
+            <span class="text-sm text-muted">Showing {{ logs.items|length }} of {{ logs.total }} logs</span>
+            <div>
+                {% if logs.has_prev %}
+                <a href="{{ url_for('admin_audit_logs', page=logs.prev_num, action=current_action, table=current_table) }}" class="btn btn-sm">[<] Prev</a>
+                {% endif %}
+                {% if logs.has_next %}
+                <a href="{{ url_for('admin_audit_logs', page=logs.next_num, action=current_action, table=current_table) }}" class="btn btn-sm">[>] Next</a>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <div class="text-mono" style="font-size: 48px; color: var(--text-muted);">[>]</div>
+            <p class="text-muted">No audit logs found.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

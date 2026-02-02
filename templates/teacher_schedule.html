@@ -1,0 +1,117 @@
+{% extends "base_retro.html" %}
+
+{% block title %}My Schedule - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[S] My Schedule</h1>
+    <span class="badge badge-green">{{ username }}</span>
+</div>
+
+<!-- Schedule Summary -->
+<div class="card mb-2">
+    <div class="card-header flex-between">
+        <h3>[#] Exam Invigilation Schedule</h3>
+        <div>
+            <a href="{{ url_for('download_teacher_schedule') }}" class="btn btn-sm btn-primary" style="margin-right: 0.5rem;">
+                [D] Download CSV
+            </a>
+            <span class="badge badge-blue">{{ schedule|length }} Sessions</span>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if dates %}
+            <div style="overflow-x: auto;">
+                <table class="table" style="min-width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: var(--bg-secondary);">
+                            <th style="width: 120px; position: sticky; left: 0; background: var(--bg-secondary); z-index: 1; border: 1px solid var(--border-color);">
+                                Time Slot
+                            </th>
+                            {% for date in dates %}
+                            <th style="min-width: 130px; text-align: center; border: 1px solid var(--border-color);">
+                                {{ date }}
+                            </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for slot in time_slots %}
+                        <tr>
+                            <td style="position: sticky; left: 0; background: var(--bg-primary); z-index: 1; border: 1px solid var(--border-color); font-weight: bold;">
+                                <span class="badge {% if slot == 'Morning' %}badge-yellow{% elif slot == 'Afternoon' %}badge-blue{% else %}badge-green{% endif %}">
+                                    {{ slot }}
+                                </span>
+                            </td>
+                            {% for date in dates %}
+                            <td style="text-align: center; border: 1px solid var(--border-color); padding: 10px; {% if schedule_grid[slot].get(date) %}background: rgba(90, 122, 90, 0.2);{% endif %}">
+                                {% if schedule_grid[slot].get(date) %}
+                                    {% set room = schedule_grid[slot][date] %}
+                                    {% set safe_date = date | replace('-', '') %}
+                                    <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                                        <strong style="font-size: 1.1em;">{{ room }}</strong>
+                                        <a href="{{ url_for('static_html', filename=room ~ '_' ~ safe_date ~ '_' ~ slot ~ '.html') }}"
+                                           target="_blank" class="btn btn-sm btn-primary" style="font-size: 0.75em;">
+                                            [>] Layout
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <span class="text-muted" style="opacity: 0.5;">-</span>
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">[?]</div>
+                <p>You have no scheduled invigilation duties yet.</p>
+                <p class="text-sm text-muted">The admin will assign you to exam sessions. Check back later.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Legend -->
+<div class="card">
+    <div class="card-header">
+        <h3>[?] Time Slots</h3>
+    </div>
+    <div class="card-body">
+        <div class="grid-3">
+            <div style="text-align: center;">
+                <span class="badge badge-yellow">Morning</span>
+                <p class="text-sm text-muted">9:00 AM - 12:00 PM</p>
+            </div>
+            <div style="text-align: center;">
+                <span class="badge badge-blue">Afternoon</span>
+                <p class="text-sm text-muted">1:00 PM - 4:00 PM</p>
+            </div>
+            <div style="text-align: center;">
+                <span class="badge badge-green">Evening</span>
+                <p class="text-sm text-muted">5:00 PM - 8:00 PM</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card mt-2">
+    <div class="card-body">
+        <div class="grid-3">
+            <a href="{{ url_for('teacher_dashboard') }}" class="btn" style="display: block; text-align: center;">
+                [<] Dashboard
+            </a>
+            <a href="{{ url_for('teacher_swap_requests') }}" class="btn" style="display: block; text-align: center;">
+                [S] Swap Requests
+            </a>
+            <a href="{{ url_for('teacher_preferences') }}" class="btn" style="display: block; text-align: center;">
+                [P] Preferences
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

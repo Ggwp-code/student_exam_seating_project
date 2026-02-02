@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Room-C Seating Chart</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #f5f5f0;
+            --bg-secondary: #ebebdf;
+            --bg-card: #fafaf5;
+            --border-color: #8b8b7a;
+            --border-dark: #5c5c4f;
+            --border-light: #d4d4c8;
+            --text-primary: #2d2d2a;
+            --text-secondary: #5c5c4f;
+            --text-muted: #8b8b7a;
+            --accent-blue: #4a7c9b;
+            --accent-green: #5c8a4d;
+            --accent-red: #9b4a4a;
+            --accent-yellow: #b8a44a;
+            --accent-purple: #7a5c8a;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 24px;
+            margin: 0;
+            min-height: 100vh;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 22px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+            color: var(--text-primary);
+        }
+
+        h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px dashed var(--border-light);
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 3px solid var(--border-color);
+            box-shadow: 3px 3px 0 var(--border-dark);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border-bottom: 2px solid var(--border-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            border: 2px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            cursor: pointer;
+            box-shadow: 2px 2px 0 var(--border-dark), inset 1px 1px 0 #fff;
+            text-decoration: none;
+        }
+
+        .btn:hover { background: var(--bg-secondary); }
+
+        .btn:active {
+            box-shadow: inset 2px 2px 0 var(--border-dark);
+            transform: translate(1px, 1px);
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+            border-color: #3a6680;
+        }
+
+        .btn-danger {
+            background: var(--accent-red);
+            color: white;
+            border-color: #7a3a3a;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            border: 1px solid;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-blue { background: #d4e5f0; color: var(--accent-blue); border-color: var(--accent-blue); }
+        .badge-green { background: #d4e8d0; color: var(--accent-green); border-color: var(--accent-green); }
+        .badge-yellow { background: #f0ecd4; color: #8a7a3a; border-color: var(--accent-yellow); }
+        .badge-purple { background: #e8d8f0; color: var(--accent-purple); border-color: var(--accent-purple); }
+
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(5, 110px);
+            gap: 12px;
+            margin: 20px auto;
+            max-width: 610px;
+        }
+
+        .seat {
+            position: relative;
+            width: 110px;
+            height: 100px;
+            background: var(--bg-card);
+            border: 3px solid var(--border-color);
+            box-shadow: 3px 3px 0 var(--border-dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .seat:hover {
+            background: var(--bg-secondary);
+        }
+
+        .seat.selected {
+            border-color: var(--accent-red);
+            background: #f5e4e4;
+            box-shadow: 0 0 0 3px rgba(155, 74, 74, 0.2), 3px 3px 0 var(--border-dark);
+        }
+
+        .seat.swap-mode:hover {
+            border-color: var(--accent-blue);
+            background: #e4f0f5;
+        }
+
+        .seat-number {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            font-family: 'VT323', monospace;
+            background: var(--bg-secondary);
+            padding: 2px 6px;
+            border: 1px solid var(--border-light);
+            color: var(--text-muted);
+        }
+
+        .time-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            font-family: 'VT323', monospace;
+            padding: 2px 4px;
+        }
+
+        .student-info {
+            font-size: 11px;
+            padding: 5px;
+            line-height: 1.3;
+            margin-top: 8px;
+        }
+
+        .student-info strong {
+            color: var(--text-primary);
+            font-size: 12px;
+        }
+
+        .student-info small {
+            color: var(--text-muted);
+            font-size: 10px;
+        }
+
+        .tooltip {
+            visibility: hidden;
+            background: var(--bg-card);
+            border: 3px solid var(--border-color);
+            box-shadow: 3px 3px 0 var(--border-dark);
+            color: var(--text-primary);
+            text-align: left;
+            padding: 12px;
+            position: absolute;
+            z-index: 9999;
+            bottom: 100%;
+            margin-bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            font-size: 12px;
+            white-space: pre-line;
+        }
+
+        .tooltip::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid var(--border-color);
+        }
+
+        .seat:hover .tooltip {
+            visibility: visible;
+        }
+
+        .filter-controls {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .form-control {
+            padding: 8px 12px;
+            font-family: inherit;
+            font-size: 14px;
+            border: 2px solid var(--border-color);
+            background: white;
+            color: var(--text-primary);
+            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border-color);
+            display: inline-block;
+        }
+
+        .constraint-grid {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .constraint-item {
+            background: var(--bg-secondary);
+            padding: 8px 12px;
+            border: 2px solid var(--border-color);
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .swap-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-blue);
+            color: white;
+            padding: 12px 16px;
+            border: 3px solid #3a6680;
+            box-shadow: 3px 3px 0 var(--border-dark);
+            font-weight: 600;
+            display: none;
+            z-index: 1001;
+        }
+
+        .swap-status.active { display: block; }
+        .swap-status.selecting { background: var(--accent-yellow); border-color: #8a7a3a; }
+
+        .divider {
+            border: none;
+            height: 2px;
+            background: repeating-linear-gradient(90deg, var(--border-color) 0px, var(--border-color) 4px, transparent 4px, transparent 8px);
+            margin: 16px 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+                max-width: 100%;
+            }
+            .seat {
+                width: 90px;
+                height: 85px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1>[R] Room-C Seating</h1>
+        <button class="btn" id="modeToggle" onclick="toggleSwapMode()">[~] Swap Mode</button>
+    </div>
+
+    <div class="swap-status" id="swapStatus">
+        Click on two seats to swap their positions
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>[i] Room Constraints</h3>
+        </div>
+        <div class="card-body">
+            <div class="constraint-grid">
+                <div class="constraint-item">Max Subjects: 10</div>
+                <div class="constraint-item">Max Branches: 3</div>
+                <div class="constraint-item">Allowed Years: 2, 3, 4</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>[?] Filters</h3>
+        </div>
+        <div class="card-body">
+            <div class="filter-controls">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search by ID or Name...">
+                <select id="timeFilter" class="form-control">
+                    <option value="">All Times</option>
+                    <option value="Morning">[M] Morning</option>
+                    <option value="Afternoon">[A] Afternoon</option>
+                    <option value="Evening">[E] Evening</option>
+                </select>
+                <select id="yearFilter" class="form-control">
+                    <option value="all">All Years</option>
+                    <option value="2">2</option>
+                </select>
+                <select id="branchFilter" class="form-control">
+                    <option value="all">All Branches</option>
+                    <option value="Unknown">Unknown</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>[#] Department Legend</h3>
+        </div>
+        <div class="card-body">
+            <div class="legend">
+                <div class="legend-item"><span class="legend-color" style="background:#4a7c9b;"></span><span>CS</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>[=] Seating Grid</h3>
+            <span class="badge badge-blue">18 Students</span>
+        </div>
+        <div class="card-body">
+            <div class="grid" id="seatingGrid">
+
+                <div class="seat" style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Operating Systems"
+                    data-id="1RV23CS077" data-name="chirag sandesh shetty" data-time="Morning"
+                    data-seat-no="1" data-position="0,0"
+                    onclick="handleSeatClick(this)">
+                    <div class="seat-number">#1</div>
+                    <div class="time-badge" style="color: #b8a44a;">[M]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS077</strong><br><small>CHIRAG SANDESH ...</small><br><small>Operating Sy...</small>
+                    </div>
+                    <div class="tooltip">Name: CHIRAG SANDESH SHETTY\nSubject: Operating Systems\nTime: Morning\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat" style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Operating Systems"
+                    data-id="1RV23CS079" data-name="chitkala patil" data-time="Evening"
+                    data-seat-no="2" data-position="1,0"
+                    onclick="handleSeatClick(this)">
+                    <div class="seat-number">#2</div>
+                    <div class="time-badge" style="color: #4a7c9b;">[E]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS079</strong><br><small>CHITKALA PATIL</small><br><small>Operating Sy...</small>
+                    </div>
+                    <div class="tooltip">Name: CHITKALA PATIL\nSubject: Operating Systems\nTime: Evening\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat" style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Software Engineering"
+                    data-id="1RV23CS081" data-name="d rakshitha" data-time="Evening"
+                    data-seat-no="3" data-position="2,0"
+                    onclick="handleSeatClick(this)">
+                    <div class="seat-number">#3</div>
+                    <div class="time-badge" style="color: #4a7c9b;">[E]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS081</strong><br><small>D RAKSHITHA</small><br><small>Software Eng...</small>
+                    </div>
+                    <div class="tooltip">Name: D RAKSHITHA\nSubject: Software Engineering\nTime: Evening\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat" style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Operating Systems"
+                    data-id="1RV23CS084" data-name="dilshad ahmed" data-time="Afternoon"
+                    data-seat-no="4" data-position="3,0"
+                    onclick="handleSeatClick(this)">
+                    <div class="seat-number">#4</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS084</strong><br><small>DILSHAD AHMED</small><br><small>Operating Sy...</small>
+                    </div>
+                    <div class="tooltip">Name: DILSHAD AHMED\nSubject: Operating Systems\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat" style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Operating Systems"
+                    data-id="1RV23CS087" data-name="eshitha chowdary nattem" data-time="Morning"
+                    data-seat-no="5" data-position="4,0"
+                    onclick="handleSeatClick(this)">
+                    <div class="seat-number">#5</div>
+                    <div class="time-badge" style="color: #b8a44a;">[M]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS087</strong><br><small>ESHITHA CHOWDAR...</small><br><small>Operating Sy...</small>
+                    </div>
+                    <div class="tooltip">Name: ESHITHA CHOWDARY NATTEM\nSubject: Operating Systems\nTime: Morning\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat" style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Database Systems"
+                    data-id="1RV23CS090" data-name="gagan b c" data-time="Evening"
+                    data-seat-no="6" data-position="0,1"
+                    onclick="handleSeatClick(this)">
+                    <div class="seat-number">#6</div>
+                    <div class="time-badge" style="color: #4a7c9b;">[E]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS090</strong><br><small>GAGAN B C</small><br><small>Database Sys...</small>
+                    </div>
+                    <div class="tooltip">Name: GAGAN B C\nSubject: Database Systems\nTime: Evening\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat" style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Software Engineering"
+                    data-id="1RV23CS093" data-name="greeshma s" data-time="Evening"
+                    data-seat-no="7" data-position="1,1"
+                    onclick="handleSeatClick(this)">
+                    <div class="seat-number">#7</div>
+                    <div class="time-badge" style="color: #4a7c9b;">[E]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS093</strong><br><small>GREESHMA S</small><br><small>Software Eng...</small>
+                    </div>
+                    <div class="tooltip">Name: GREESHMA S\nSubject: Software Engineering\nTime: Evening\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat" style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Software Engineering"
+                    data-id="1RV23CS096" data-name="harshit raj" data-time="Morning"
+                    data-seat-no="8" data-position="2,1"
+                    onclick="handleSeatClick(this)">
+                    <div class="seat-number">#8</div>
+                    <div class="time-badge" style="color: #b8a44a;">[M]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS096</strong><br><small>HARSHIT RAJ</small><br><small>Software Eng...</small>
+                    </div>
+                    <div class="tooltip">Name: HARSHIT RAJ\nSubject: Software Engineering\nTime: Morning\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat" style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Operating Systems"
+                    data-id="1RV23CS099" data-name="hemang shrikar desai" data-time="Morning"
+                    data-seat-no="9" data-position="3,1"
+                    onclick="handleSeatClick(this)">
+                    <div class="seat-number">#9</div>
+                    <div class="time-badge" style="color: #b8a44a;">[M]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS099</strong><br><small>HEMANG SHRIKAR ...</small><br><small>Operating Sy...</small>
+                    </div>
+                    <div class="tooltip">Name: HEMANG SHRIKAR DESAI\nSubject: Operating Systems\nTime: Morning\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat" style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Operating Systems"
+                    data-id="1RV23CS102" data-name="ishaan c" data-time="Afternoon"
+                    data-seat-no="10" data-position="4,1"
+                    onclick="handleSeatClick(this)">
+                    <div class="seat-number">#10</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS102</strong><br><small>ISHAAN C</small><br><small>Operating Sy...</small>
+                    </div>
+                    <div class="tooltip">Name: ISHAAN C\nSubject: Operating Systems\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat" style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Database Systems"
+                    data-id="1RV23CS105" data-name="jestakumar" data-time="Evening"
+                    data-seat-no="11" data-position="0,2"
+                    onclick="handleSeatClick(this)">
+                    <div class="seat-number">#11</div>
+                    <div class="time-badge" style="color: #4a7c9b;">[E]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS105</strong><br><small>JESTAKUMAR</small><br><small>Database Sys...</small>
+                    </div>
+                    <div class="tooltip">Name: JESTAKUMAR\nSubject: Database Systems\nTime: Evening\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat" style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Software Engineering"
+                    data-id="1RV23CS108" data-name="k srujan" data-time="Evening"
+                    data-seat-no="12" data-position="1,2"
+                    onclick="handleSeatClick(this)">
+                    <div class="seat-number">#12</div>
+                    <div class="time-badge" style="color: #4a7c9b;">[E]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS108</strong><br><small>K SRUJAN</small><br><small>Software Eng...</small>
+                    </div>
+                    <div class="tooltip">Name: K SRUJAN\nSubject: Software Engineering\nTime: Evening\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat" style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Software Engineering"
+                    data-id="1RV23CS111" data-name="kavyashree b k" data-time="Morning"
+                    data-seat-no="13" data-position="2,2"
+                    onclick="handleSeatClick(this)">
+                    <div class="seat-number">#13</div>
+                    <div class="time-badge" style="color: #b8a44a;">[M]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS111</strong><br><small>KAVYASHREE B K</small><br><small>Software Eng...</small>
+                    </div>
+                    <div class="tooltip">Name: KAVYASHREE B K\nSubject: Software Engineering\nTime: Morning\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat" style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Operating Systems"
+                    data-id="1RV23CS115" data-name="kruthika n" data-time="Morning"
+                    data-seat-no="14" data-position="3,2"
+                    onclick="handleSeatClick(this)">
+                    <div class="seat-number">#14</div>
+                    <div class="time-badge" style="color: #b8a44a;">[M]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS115</strong><br><small>KRUTHIKA N</small><br><small>Operating Sy...</small>
+                    </div>
+                    <div class="tooltip">Name: KRUTHIKA N\nSubject: Operating Systems\nTime: Morning\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat" style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Operating Systems"
+                    data-id="1RV23CS118" data-name="lakshmi s d" data-time="Afternoon"
+                    data-seat-no="15" data-position="4,2"
+                    onclick="handleSeatClick(this)">
+                    <div class="seat-number">#15</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS118</strong><br><small>LAKSHMI S D</small><br><small>Operating Sy...</small>
+                    </div>
+                    <div class="tooltip">Name: LAKSHMI S D\nSubject: Operating Systems\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat" style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Database Systems"
+                    data-id="1RV24CS426" data-name="chethan gowda" data-time="Evening"
+                    data-seat-no="16" data-position="0,3"
+                    onclick="handleSeatClick(this)">
+                    <div class="seat-number">#16</div>
+                    <div class="time-badge" style="color: #4a7c9b;">[E]</div>
+                    <div class="student-info">
+                        <strong>1RV24CS426</strong><br><small>CHETHAN GOWDA</small><br><small>Database Sys...</small>
+                    </div>
+                    <div class="tooltip">Name: CHETHAN GOWDA\nSubject: Database Systems\nTime: Evening\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat" style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Software Engineering"
+                    data-id="1RV24CS407" data-name="harshitha naik k" data-time="Evening"
+                    data-seat-no="17" data-position="1,3"
+                    onclick="handleSeatClick(this)">
+                    <div class="seat-number">#17</div>
+                    <div class="time-badge" style="color: #4a7c9b;">[E]</div>
+                    <div class="student-info">
+                        <strong>1RV24CS407</strong><br><small>HARSHITHA NAIK ...</small><br><small>Software Eng...</small>
+                    </div>
+                    <div class="tooltip">Name: HARSHITHA NAIK K\nSubject: Software Engineering\nTime: Evening\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat" style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Software Engineering"
+                    data-id="1RV23CS306" data-name="sahana markande" data-time="Morning"
+                    data-seat-no="18" data-position="2,3"
+                    onclick="handleSeatClick(this)">
+                    <div class="seat-number">#18</div>
+                    <div class="time-badge" style="color: #b8a44a;">[M]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS306</strong><br><small>SAHANA MARKANDE</small><br><small>Software Eng...</small>
+                    </div>
+                    <div class="tooltip">Name: SAHANA MARKANDE\nSubject: Software Engineering\nTime: Morning\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                <div></div><div></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    let swapMode = false;
+    let selectedSeats = [];
+
+    function isTeacherMode() {
+        return new URLSearchParams(window.location.search).get("teacher") === "1";
+    }
+
+    function getHighlightedStudent() {
+        return new URLSearchParams(window.location.search).get("highlight");
+    }
+
+    function toggleSwapMode() {
+        swapMode = !swapMode;
+        const button = document.getElementById('modeToggle');
+        const status = document.getElementById('swapStatus');
+        const grid = document.getElementById('seatingGrid');
+
+        if (swapMode) {
+            button.textContent = '[X] Exit Swap';
+            button.classList.add('btn-danger');
+            status.classList.add('active');
+            grid.classList.add('swap-mode');
+        } else {
+            button.textContent = '[~] Swap Mode';
+            button.classList.remove('btn-danger');
+            status.classList.remove('active');
+            grid.classList.remove('swap-mode');
+            clearSelection();
+        }
+    }
+
+    function clearSelection() {
+        selectedSeats = [];
+        document.querySelectorAll('.seat.selected').forEach(seat => {
+            seat.classList.remove('selected');
+        });
+        updateSwapStatus();
+    }
+
+    function updateSwapStatus() {
+        const status = document.getElementById('swapStatus');
+        if (selectedSeats.length === 0) {
+            status.textContent = 'Click on two seats to swap their positions';
+            status.classList.remove('selecting');
+        } else if (selectedSeats.length === 1) {
+            const seatInfo = selectedSeats[0].dataset.id;
+            status.textContent = `Selected: ${seatInfo} - Click another seat to swap`;
+            status.classList.add('selecting');
+        }
+    }
+
+    function handleSeatClick(seatElement) {
+        if (!swapMode) return;
+
+        if (seatElement.classList.contains('selected')) {
+            seatElement.classList.remove('selected');
+            selectedSeats = selectedSeats.filter(seat => seat !== seatElement);
+        } else {
+            if (selectedSeats.length < 2) {
+                seatElement.classList.add('selected');
+                selectedSeats.push(seatElement);
+            }
+        }
+
+        if (selectedSeats.length === 2) {
+            performSwap(selectedSeats[0], selectedSeats[1]);
+        }
+
+        updateSwapStatus();
+    }
+
+    function performSwap(seat1, seat2) {
+        const student1 = {
+            id: seat1.dataset.id,
+            name: seat1.dataset.name,
+            seatNo: seat1.dataset.seatNo
+        };
+        const student2 = {
+            id: seat2.dataset.id,
+            name: seat2.dataset.name,
+            seatNo: seat2.dataset.seatNo
+        };
+
+        if (confirm(`Swap positions of ${student1.id} (Seat #${student1.seatNo}) and ${student2.id} (Seat #${student2.seatNo})?`)) {
+            swapSeatContent(seat1, seat2);
+
+            const status = document.getElementById('swapStatus');
+            status.textContent = `[OK] Swapped ${student1.id} <-> ${student2.id}`;
+            status.style.background = 'var(--accent-green)';
+            status.style.borderColor = '#4a7040';
+
+            setTimeout(() => {
+                status.style.background = 'var(--accent-blue)';
+                status.style.borderColor = '#3a6680';
+                updateSwapStatus();
+            }, 2000);
+        }
+
+        clearSelection();
+    }
+
+    function swapSeatContent(seat1, seat2) {
+        const seat1Data = {
+            id: seat1.dataset.id,
+            name: seat1.dataset.name,
+            year: seat1.dataset.year,
+            branch: seat1.dataset.branch,
+            subject: seat1.dataset.subject,
+            time: seat1.dataset.time,
+            innerHTML: seat1.innerHTML
+        };
+
+        const seat2Data = {
+            id: seat2.dataset.id,
+            name: seat2.dataset.name,
+            year: seat2.dataset.year,
+            branch: seat2.dataset.branch,
+            subject: seat2.dataset.subject,
+            time: seat2.dataset.time,
+            innerHTML: seat2.innerHTML
+        };
+
+        seat1.dataset.id = seat2Data.id;
+        seat1.dataset.name = seat2Data.name;
+        seat1.dataset.year = seat2Data.year;
+        seat1.dataset.branch = seat2Data.branch;
+        seat1.dataset.subject = seat2Data.subject;
+        seat1.dataset.time = seat2Data.time;
+
+        seat2.dataset.id = seat1Data.id;
+        seat2.dataset.name = seat1Data.name;
+        seat2.dataset.year = seat1Data.year;
+        seat2.dataset.branch = seat1Data.branch;
+        seat2.dataset.subject = seat1Data.subject;
+        seat2.dataset.time = seat1Data.time;
+
+        const seat1SeatNo = seat1.querySelector('.seat-number').textContent;
+        const seat2SeatNo = seat2.querySelector('.seat-number').textContent;
+
+        seat1.innerHTML = seat2Data.innerHTML;
+        seat2.innerHTML = seat1Data.innerHTML;
+
+        seat1.querySelector('.seat-number').textContent = seat1SeatNo;
+        seat2.querySelector('.seat-number').textContent = seat2SeatNo;
+    }
+
+    function filterSeats() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const time = document.getElementById('timeFilter').value;
+        const year = document.getElementById('yearFilter').value;
+        const branch = document.getElementById('branchFilter').value;
+
+        document.querySelectorAll('.seat').forEach(seat => {
+            if (!seat.dataset.id) return;
+
+            const id = seat.dataset.id.toLowerCase();
+            const name = seat.dataset.name.toLowerCase();
+            const seatTime = seat.dataset.time;
+            const seatYear = seat.dataset.year;
+            const seatBranch = seat.dataset.branch;
+
+            const matchesSearch = id.includes(searchTerm) || name.includes(searchTerm);
+            const matchesTime = !time || seatTime === time;
+            const matchesYear = year === "all" || seatYear === year;
+            const matchesBranch = branch === "all" || seatBranch === branch;
+
+            if (matchesSearch && matchesTime && matchesYear && matchesBranch) {
+                seat.style.opacity = '1';
+                seat.style.filter = 'none';
+            } else {
+                seat.style.opacity = '0.3';
+                seat.style.filter = 'grayscale(100%)';
+            }
+        });
+    }
+
+    document.getElementById('searchInput').addEventListener('input', filterSeats);
+    document.getElementById('timeFilter').addEventListener('change', filterSeats);
+    document.getElementById('yearFilter').addEventListener('change', filterSeats);
+    document.getElementById('branchFilter').addEventListener('change', filterSeats);
+
+    window.addEventListener('load', function() {
+        if (isTeacherMode()) {
+            document.getElementById('modeToggle').style.display = 'inline-flex';
+        } else {
+            document.getElementById('modeToggle').style.display = 'none';
+        }
+
+        const highlightId = getHighlightedStudent();
+        if (highlightId) {
+            const targetSeat = document.querySelector(`[data-id="${highlightId}"]`);
+            if (targetSeat) {
+                targetSeat.style.border = '3px solid var(--accent-yellow)';
+                targetSeat.style.boxShadow = '0 0 0 4px rgba(184, 164, 74, 0.3), 3px 3px 0 var(--border-dark)';
+                targetSeat.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    });
+    </script>
+</body>
+</html>

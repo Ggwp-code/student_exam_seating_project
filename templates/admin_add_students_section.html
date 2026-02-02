@@ -1,0 +1,103 @@
+{% extends "base_retro.html" %}
+
+{% block title %}Add Students by Section - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[+] Add Students by Section</h1>
+    <a href="{{ url_for('admin_students') }}" class="btn">[<] Back</a>
+</div>
+
+<div class="card mb-2">
+    <div class="card-header">
+        <h3>[?] About This Feature</h3>
+    </div>
+    <div class="card-body">
+        <p>Quickly add multiple students to a specific section. All students will share the same:</p>
+        <ul>
+            <li>Department, Branch, Section</li>
+            <li>Year and Semester</li>
+        </ul>
+        <p class="text-muted">Perfect for adding an entire class roster at once.</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>[>] Section Details & Students</h3>
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">[>] Department Code</label>
+                    <select name="department" class="form-control">
+                        {% for dept in departments %}
+                            <option value="{{ dept.code }}">{{ dept.code }} - {{ dept.name }}</option>
+                        {% endfor %}
+                        <option value="CS">CS (default)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">[>] Branch</label>
+                    <input type="text" name="branch" class="form-control" placeholder="e.g., CSE, ISE, AIML" required>
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="form-group">
+                    <label class="form-label">[>] Section</label>
+                    <input type="text" name="section" class="form-control" placeholder="e.g., A, B, C" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">[>] Year</label>
+                    <select name="year" class="form-control">
+                        <option value="1">1st Year</option>
+                        <option value="2">2nd Year</option>
+                        <option value="3" selected>3rd Year</option>
+                        <option value="4">4th Year</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">[>] Semester</label>
+                    <select name="semester" class="form-control">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6" selected>6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">[>] Student Data (one per line)</label>
+                <textarea name="student_data" class="form-control" rows="15" required
+                          placeholder="StudentID,Name
+1RV23CS061,B M MANOHARA
+1RV23CS062,BHARATH D
+1RV23CS063,BHAVAN TIMMAPPA GOND"></textarea>
+                <small class="text-muted">Format: <code>StudentID,Name</code> - one student per line</small>
+            </div>
+
+            <button type="submit" class="btn btn-success">[+] Add Students</button>
+        </form>
+    </div>
+</div>
+
+<div class="card mt-2">
+    <div class="card-header">
+        <h3>[*] Quick Tips</h3>
+    </div>
+    <div class="card-body">
+        <ul>
+            <li>You can paste data directly from Excel (copy StudentID and Name columns)</li>
+            <li>Existing students with same ID will be updated with new section info</li>
+            <li>After adding students, use "Assign Sections" to enroll them in exams</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base_retro.html" %}
+
+{% block title %}My Notifications - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[N] My Notifications</h1>
+    <span class="badge badge-green">{{ username }}</span>
+</div>
+
+<div class="card">
+    <div class="card-header flex-between">
+        <h3>[#] Recent Notifications</h3>
+        <span class="badge badge-blue">{{ notifications|length }}</span>
+    </div>
+    <div class="card-body">
+        {% if notifications %}
+            {% for notif in notifications %}
+            <div class="card mb-1" style="border-left: 3px solid {% if notif.type == 'swap_approved' %}#5a7a5a{% elif notif.type == 'exam_reminder' %}#d4a017{% elif 'rejected' in notif.type %}#9a5a5a{% else %}#4a7a9a{% endif %};">
+                <div class="card-body" style="padding: 12px;">
+                    <div class="flex-between mb-1">
+                        <strong>{{ notif.subject }}</strong>
+                        <div>
+                            <span class="badge {% if notif.status == 'sent' %}badge-green{% elif notif.status == 'pending' %}badge-yellow{% else %}badge-red{% endif %}">
+                                {{ notif.status }}
+                            </span>
+                            <span class="text-sm text-muted" style="margin-left: 8px;">{{ notif.created }}</span>
+                        </div>
+                    </div>
+                    <p class="text-sm" style="margin: 0;">{{ notif.message }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">[?]</div>
+                <p>No notifications yet.</p>
+                <p class="text-sm text-muted">You'll receive notifications for schedule changes, swap requests, and exam reminders.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Legend -->
+<div class="card mt-2">
+    <div class="card-header">
+        <h3>[?] Notification Types</h3>
+    </div>
+    <div class="card-body">
+        <div class="grid-2">
+            <div>
+                <p><span style="display: inline-block; width: 15px; height: 15px; background: #5a7a5a;"></span> Approved actions</p>
+                <p><span style="display: inline-block; width: 15px; height: 15px; background: #d4a017;"></span> Reminders</p>
+            </div>
+            <div>
+                <p><span style="display: inline-block; width: 15px; height: 15px; background: #9a5a5a;"></span> Rejected/declined</p>
+                <p><span style="display: inline-block; width: 15px; height: 15px; background: #4a7a9a;"></span> Informational</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card mt-2">
+    <div class="card-body">
+        <div class="grid-3">
+            <a href="{{ url_for('teacher_dashboard') }}" class="btn" style="display: block; text-align: center;">
+                [<] Dashboard
+            </a>
+            <a href="{{ url_for('teacher_swap_requests') }}" class="btn" style="display: block; text-align: center;">
+                [S] Swap Requests
+            </a>
+            <a href="{{ url_for('teacher_schedule') }}" class="btn" style="display: block; text-align: center;">
+                [C] My Schedule
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Exam Management{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/retro.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span>Exam Management</span>
+            </div>
+            <nav class="sidebar-nav">
+                {% if session.get('role') == 'admin' %}
+                <!-- Admin Navigation -->
+                <a href="{{ url_for('admin_dashboard') }}" class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+                    <span class="icon">[=]</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('admin_exams') }}" class="{% if 'exam' in request.endpoint %}active{% endif %}">
+                    <span class="icon">[E]</span>
+                    <span>Exams</span>
+                </a>
+                <a href="{{ url_for('admin_rooms_config') }}" class="{% if 'room' in request.endpoint %}active{% endif %}">
+                    <span class="icon">[R]</span>
+                    <span>Rooms</span>
+                </a>
+                <a href="{{ url_for('admin_relationships') }}" class="{% if 'relationship' in request.endpoint %}active{% endif %}">
+                    <span class="icon">[&]</span>
+                    <span>Friends</span>
+                </a>
+                <a href="{{ url_for('admin_import_export') }}" class="{% if 'import' in request.endpoint or 'export' in request.endpoint %}active{% endif %}">
+                    <span class="icon">[~]</span>
+                    <span>Import/Export</span>
+                </a>
+                <a href="{{ url_for('admin_analytics') }}" class="{% if 'analytics' in request.endpoint %}active{% endif %}">
+                    <span class="icon">[%]</span>
+                    <span>Analytics</span>
+                </a>
+                <a href="{{ url_for('admin_audit_logs') }}" class="{% if 'audit' in request.endpoint %}active{% endif %}">
+                    <span class="icon">[>]</span>
+                    <span>Logs</span>
+                </a>
+                <a href="{{ url_for('admin_cheat_flags') }}" class="{% if 'cheat' in request.endpoint %}active{% endif %}">
+                    <span class="icon">[!]</span>
+                    <span>Flags</span>
+                </a>
+                {% else %}
+                <!-- Teacher Navigation -->
+                <a href="{{ url_for('teacher_dashboard') }}" class="{% if request.endpoint == 'teacher_dashboard' %}active{% endif %}">
+                    <span class="icon">[=]</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('teacher_schedule') }}" class="{% if request.endpoint == 'teacher_schedule' %}active{% endif %}">
+                    <span class="icon">[S]</span>
+                    <span>My Schedule</span>
+                </a>
+                <a href="{{ url_for('seating_dashboard') }}" class="{% if request.endpoint == 'seating_dashboard' %}active{% endif %}">
+                    <span class="icon">[R]</span>
+                    <span>View Layouts</span>
+                </a>
+                {% endif %}
+                <hr class="divider">
+                <a href="{{ url_for('logout') }}">
+                    <span class="icon">[X]</span>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- Core JavaScript -->
+    <script>
+    // Toast Notification System
+    const Toast = {
+        container: document.getElementById('toastContainer'),
+
+        show(message, type = 'info', duration = 5000) {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+
+            const icons = {
+                success: '[OK]',
+                danger: '[!!]',
+                warning: '[**]',
+                info: '[i]'
+            };
+
+            toast.innerHTML = `
+                <div class="toast-header">
+                    <span>${icons[type] || '[i]'} ${type.charAt(0).toUpperCase() + type.slice(1)}</span>
+                    <button class="toast-close" onclick="Toast.close(this)">&times;</button>
+                </div>
+                <div class="toast-body">${message}</div>
+                <div class="toast-progress" style="animation-duration: ${duration}ms"></div>
+            `;
+
+            this.container.appendChild(toast);
+
+            // Auto remove after duration
+            setTimeout(() => this.close(toast.querySelector('.toast-close')), duration);
+
+            return toast;
+        },
+
+        close(btn) {
+            const toast = btn.closest ? btn.closest('.toast') : btn.parentElement.parentElement;
+            if (toast && !toast.classList.contains('hiding')) {
+                toast.classList.add('hiding');
+                setTimeout(() => toast.remove(), 300);
+            }
+        },
+
+        success(message, duration) { return this.show(message, 'success', duration); },
+        error(message, duration) { return this.show(message, 'danger', duration); },
+        warning(message, duration) { return this.show(message, 'warning', duration); },
+        info(message, duration) { return this.show(message, 'info', duration); }
+    };
+
+    // Loading Spinner
+    const Loader = {
+        show(text = 'Loading') {
+            if (document.getElementById('globalLoader')) return;
+
+            const overlay = document.createElement('div');
+            overlay.id = 'globalLoader';
+            overlay.className = 'spinner-overlay';
+            overlay.innerHTML = `
+                <div class="spinner">
+                    <div class="spinner-icon"></div>
+                    <div class="spinner-text">${text}</div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        },
+
+        hide() {
+            const loader = document.getElementById('globalLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 200);
+            }
+        },
+
+        // Add loading state to button
+        buttonLoading(btn, loading = true) {
+            if (loading) {
+                btn.classList.add('btn-loading');
+                btn.dataset.originalText = btn.innerHTML;
+            } else {
+                btn.classList.remove('btn-loading');
+                if (btn.dataset.originalText) {
+                    btn.innerHTML = btn.dataset.originalText;
+                }
+            }
+        }
+    };
+
+    // Form submission with loading
+    document.querySelectorAll('form[data-loading]').forEach(form => {
+        form.addEventListener('submit', function() {
+            const btn = this.querySelector('button[type="submit"]');
+            if (btn) Loader.buttonLoading(btn, true);
+            Loader.show(this.dataset.loading || 'Processing');
+        });
+    });
+
+    // Show flash messages as toasts on page load
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        Toast.show("{{ message|e }}", "{{ category }}");
+        {% endfor %}
+    {% endwith %}
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

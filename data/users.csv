@@ -1,0 +1,12 @@
+UserID,Name,Role,AssociatedYear,2FA_Secret
+admin1,Admin User,admin,N/A,ABCD1234
+teacher1,Math Teacher,teacher,2,N/A
+student1,John Doe,student,2,N/A
+student2,Jane Smith,student,3/N/A
+student3,Ali Khan,student,2,N/A
+student4,Maya Verma,student,2,N/A
+student5,Leo Tran,student,3,N/A
+student6,Riya Patel,student,1,N/A
+student7,Vikram Rao,student,4/N/A
+student8,Nina Das,student,3/N/A
+

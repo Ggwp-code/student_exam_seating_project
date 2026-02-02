@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seating Dashboard (Admin View)</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8fafc;
+      color: #333;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .room-grid-container {
+        display: grid;
+        gap: 10px;
+        grid-auto-flow: row; /* Default: lays out items in rows first */
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); /* Default for desktop */
+    }
+    .seat {
+      width: 60px;
+      height: 60px;
+      border: 1px solid #ccc;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 0.7em;
+      text-align: center;
+      box-sizing: border-box;
+      border-radius: 4px;
+      transition: all 0.2s ease-in-out;
+      position: relative; /* For tooltip positioning */
+    }
+    .seat.occupied {
+      background-color: #e0f2f7;
+      border-color: #81d4fa;
+      cursor: pointer;
+    }
+    .seat.empty {
+      background-color: #f5f5f5;
+      border-color: #e0e0e0;
+    }
+    .seat:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+    .seat-info {
+      font-weight: bold;
+    }
+    .student-id {
+      font-size: 0.6em;
+      color: #555;
+    }
+    .tooltip {
+        position: absolute;
+        background-color: #333;
+        color: #fff;
+        padding: 8px;
+        border-radius: 4px;
+        font-size: 0.8em;
+        white-space: nowrap;
+        z-index: 100;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s, visibility 0.2s;
+        bottom: 100%; /* Position above the seat */
+        left: 50%;
+        transform: translateX(-50%);
+        margin-bottom: 5px;
+    }
+    .seat:hover .tooltip {
+        opacity: 1;
+        visibility: visible;
+    }
+    .legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+    .legend-color-box {
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
+        border-radius: 4px;
+    }
+    /* Style for highlighted student */
+    .highlighted-student {
+        border: 3px solid #f59e0b !important; /* Orange border */
+        box-shadow: 0 0 0 5px rgba(245, 158, 11, 0.3) !important; /* Orange glow */
+        z-index: 10; /* Bring to front */
+    }
+    /* Teacher Mode Specific Styles */
+    .teacher-mode .seat.occupied {
+        border: 2px dashed #93c5fd; /* Light blue dashed border */
+    }
+    .teacher-mode .seat.swapping {
+        border: 3px solid #ef4444; /* Red solid border */
+        background-color: #fee2e2; /* Light red background */
+    }
+    .teacher-mode .seat.swappable {
+        border: 3px solid #22c55e; /* Green solid border */
+        background-color: #dcfce7; /* Light green background */
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <span class="text-xl font-semibold">Exam Seating Dashboard</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-600">Welcome, Admin {{ username }}</span>
+                    <a href="{{ url_for('admin_dashboard') }}" class="text-blue-600 hover:text-blue-700">Admin Dashboard</a>
+                    <a href="{{ url_for('logout') }}" class="text-red-600 hover:text-red-700">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Exam Seating Arrangement</h1>
+
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                <div>
+                    <label for="roomSelect" class="block text-sm font-medium text-gray-700 mb-2">Select Room:</label>
+                    <select id="roomSelect" class="form-select block w-full border-gray-300 rounded-md shadow-sm">
+                        {% for room in room_names_js %} {# Use the JS-formatted variable #}
+                        <option value="{{ room }}">{{ room }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="searchInput" class="block text-sm font-medium text-gray-700 mb-2">Search Student ID/Name:</label>
+                    <input type="text" id="searchInput" placeholder="e.g., 1001, John Doe"
+                           class="form-input block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+                <div>
+                    <label for="timeFilter" class="block text-sm font-medium text-gray-700 mb-2">Time Slot:</label>
+                    <select id="timeFilter" class="form-select block w-full border-gray-300 rounded-md shadow-sm">
+                        <option value="all">All</option>
+                        <option value="Morning">Morning ☀️</option>
+                        <option value="Afternoon">Afternoon ⛅</option>
+                        <option value="Evening">Evening 🌙</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="yearFilter" class="block text-sm font-medium text-gray-700 mb-2">Year:</label>
+                    <select id="yearFilter" class="form-select block w-full border-gray-300 rounded-md shadow-sm">
+                        <option value="all">All</option>
+                        </select>
+                </div>
+                <div>
+                    <label for="branchFilter" class="block text-sm font-medium text-gray-700 mb-2">Branch:</label>
+                    <select id="branchFilter" class="form-select block w-full border-gray-300 rounded-md shadow-sm">
+                        <option value="all">All</option>
+                        </select>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4 mt-4">
+                <button id="exportCsvBtn" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Export Current Room to CSV</button>
+            </div>
+        </div>
+
+        <div id="modeToggle" class="bg-white p-4 rounded-lg shadow-md mb-6 hidden">
+            <label class="inline-flex items-center cursor-pointer">
+                <input type="checkbox" value="" class="sr-only peer" id="teacherModeCheckbox">
+                <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <span class="ms-3 text-sm font-medium text-gray-900">Enable Swap Mode (for Teachers)</span>
+            </label>
+            <div id="swapControls" class="mt-4 hidden">
+                <p class="text-sm text-gray-600 mb-2">Click on two students to swap their seats.</p>
+                <button id="resetSwapBtn" class="bg-gray-200 text-gray-800 px-3 py-1 rounded-md hover:bg-gray-300 text-sm">Reset Swap</button>
+            </div>
+        </div>
+        
+        <div id="roomVisualization" class="bg-white p-6 rounded-lg shadow-md">
+            <h2 id="roomTitle" class="text-2xl font-bold mb-4">Select a Room</h2>
+            <div id="seatingGrid" class="room-grid-container">
+                </div>
+            <div id="legend" class="mt-6">
+                <h3 class="text-lg font-semibold mb-2">Department Legend</h3>
+                <div id="legend-items" class="flex flex-wrap gap-4">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+    <script>
+        // Data passed from Flask backend
+        const ROOM_NAMES_DATA = JSON.parse('{{ room_names_js | tojson | escapejs }}');
+        const FINAL_LAYOUT_DATA = JSON.parse('{{ final_layout_json | tojson | escapejs }}');
+        const METADATA_DATA = JSON.parse('{{ metadata_json | tojson | escapejs }}');
+        const ROOMS_CONFIG_DATA = JSON.parse('{{ rooms_config_json | tojson | escapejs }}');
+        const STUDENT_DATABASE_DATA = JSON.parse('{{ student_database_json | tojson | escapejs }}');
+
+        // DOM elements
+        const roomSelect = document.getElementById('roomSelect');
+        const searchInput = document.getElementById('searchInput');
+        const timeFilter = document.getElementById('timeFilter');
+        const yearFilter = document.getElementById('yearFilter');
+        const branchFilter = document.getElementById('branchFilter');
+        const seatingGrid = document.getElementById('seatingGrid');
+        const roomTitle = document.getElementById('roomTitle');
+        const legendContainer = document.getElementById('legend-items');
+        const exportCsvBtn = document.getElementById('exportCsvBtn');
+
+        // Teacher Mode Elements (will be hidden for Admin users as per styling in app.py)
+        const teacherModeCheckbox = document.getElementById('teacherModeCheckbox');
+        const swapControls = document.getElementById('swapControls');
+        const modeToggleContainer = document.getElementById('modeToggle'); // The div containing the toggle
+        const resetSwapBtn = document.getElementById('resetSwapBtn');
+
+        let currentRoomData = [];
+        let deptColors = {};
+        let years = [];
+        let branches = [];
+        
+        let swappingMode = false;
+        let firstSwapStudent = null;
+        let secondSwapStudent = null;
+
+        // --- Helper Functions ---
+
+        // Function to determine if current user is a teacher (from context)
+        // This is a client-side check, actual permission is server-side.
+        // For admin, this should return false or be unused.
+        function isTeacherModeEnabled() {
+            // In the admin dashboard, we don't enable this functionality
+            return false; // Always false for admin's index.html view
+        }
+        
+        function getHighlightedStudent() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('highlight');
+        }
+
+        function generateDepartmentColors() {
+            const departments = new Set();
+            Object.values(METADATA_DATA).forEach(student => {
+                if (student.Department) {
+                    departments.add(student.Department);
+                }
+            });
+            const colors = ['#636efa', '#ef553b', '#00cc96', '#ab63fa', '#ffa15a',
+                            '#19d3f3', '#ff6692', '#b6e880', '#ff97ff', '#fecb52'];
+            let i = 0;
+            departments.forEach(dept => {
+                deptColors[dept] = colors[i % colors.length];
+                i++;
+            });
+
+            // Populate year and branch filters
+            years = [...new Set(Object.values(METADATA_DATA).map(s => s.Year).filter(Boolean))].sort();
+            branches = [...new Set(Object.values(METADATA_DATA).map(s => s.Branch).filter(Boolean))].sort();
+
+            years.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearFilter.appendChild(option);
+            });
+
+            branches.forEach(branch => {
+                const option = document.createElement('option');
+                option.value = branch;
+                option.textContent = branch;
+                branchFilter.appendChild(option);
+            });
+        }
+
+        function renderLegend() {
+            legendContainer.innerHTML = '';
+            for (const dept in deptColors) {
+                const div = document.createElement('div');
+                div.className = 'legend-item';
+                div.innerHTML = `
+                    <div class="legend-color-box" style="background-color: ${deptColors[dept]}"></div>
+                    <span>${dept}</span>
+                `;
+                legendContainer.appendChild(div);
+            }
+        }
+
+        function renderRoom(roomName) {
+            seatingGrid.innerHTML = ''; // Clear previous grid
+            roomTitle.textContent = `Seating for ${roomName}`;
+            currentRoomData = FINAL_LAYOUT_DATA[roomName] || [];
+
+            const roomConfig = ROOMS_CONFIG_DATA.find(r => r.room_name === roomName);
+            if (!roomConfig) {
+                seatingGrid.innerHTML = `<p class="text-red-500">Room configuration not found for ${roomName}.</p>`;
+                return;
+            }
+
+            // Set CSS grid properties based on room config
+            seatingGrid.style.gridTemplateColumns = `repeat(${roomConfig.cols}, minmax(60px, 1fr))`;
+            seatingGrid.style.gridAutoFlow = 'row'; // Ensure row flow
+
+            // Create a conceptual grid to fill empty spaces
+            const grid = {};
+            currentRoomData.forEach(seat => {
+                grid[`${seat.x},${seat.y}`] = seat;
+            });
+
+            for (let y = 1; y <= roomConfig.rows; y++) {
+                for (let x = 1; x <= roomConfig.cols; x++) {
+                    const seat = grid[`${x},${y}`];
+                    const seatDiv = document.createElement('div');
+                    seatDiv.className = 'seat';
+                    seatDiv.dataset.x = x;
+                    seatDiv.dataset.y = y;
+
+                    if (seat) {
+                        const studentInfo = METADATA_DATA[seat.student_id] || {};
+                        seatDiv.classList.add('occupied');
+                        seatDiv.dataset.id = seat.student_id;
+                        seatDiv.dataset.name = studentInfo.Name || 'Unknown';
+                        seatDiv.dataset.department = studentInfo.Department || 'Unknown';
+                        seatDiv.dataset.branch = studentInfo.Branch || 'Unknown';
+                        seatDiv.dataset.year = studentInfo.Year || '';
+                        seatDiv.dataset.subject = studentInfo.Subject || 'Unknown';
+                        seatDiv.dataset.examTime = studentInfo.ExamTime || '';
+
+                        // Apply department color
+                        if (studentInfo.Department && deptColors[studentInfo.Department]) {
+                            seatDiv.style.backgroundColor = deptColors[studentInfo.Department];
+                            seatDiv.style.color = '#fff'; // White text for colored backgrounds
+                        }
+
+                        seatDiv.innerHTML = `
+                            <span class="seat-info">${seat.seat_no}</span>
+                            <span class="student-id">${seat.student_id}</span>
+                            <div class="tooltip">
+                                ID: ${seat.student_id}<br>
+                                Name: ${studentInfo.Name || 'N/A'}<br>
+                                Dept: ${studentInfo.Department || 'N/A'}<br>
+                                Branch: ${studentInfo.Branch || 'N/A'}<br>
+                                Subject: ${studentInfo.Subject || 'N/A'}<br>
+                                Year: ${studentInfo.Year || 'N/A'}<br>
+                                Exam: ${studentInfo.ExamTime || 'N/A'}
+                            </div>
+                        `;
+                    } else {
+                        seatDiv.classList.add('empty');
+                        seatDiv.innerHTML = `<span class="seat-info">E</span>`;
+                    }
+                    seatingGrid.appendChild(seatDiv);
+                }
+            }
+            applyFilters(); // Apply current filters after rendering new room
+            highlightStudentFromURL(); // Highlight student if ID is in URL
+        }
+
+        function applyFilters() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedTime = timeFilter.value;
+            const selectedYear = yearFilter.value;
+            const selectedBranch = branchFilter.value;
+
+            document.querySelectorAll('.seat.occupied').forEach(seat => {
+                const studentId = seat.dataset.id.toLowerCase();
+                const studentName = seat.dataset.name.toLowerCase();
+                const studentTime = seat.dataset.examTime;
+                const studentYear = seat.dataset.year;
+                const studentBranch = seat.dataset.branch;
+
+                const matchesSearch = searchTerm === "" || studentId.includes(searchTerm) || studentName.includes(searchTerm);
+                const matchesTime = selectedTime === "all" || studentTime === selectedTime;
+                const matchesYear = selectedYear === "all" || String(studentYear) === selectedYear;
+                const matchesBranch = selectedBranch === "all" || studentBranch === selectedBranch;
+
+                if (matchesSearch && matchesTime && matchesYear && matchesBranch) {
+                    seat.style.opacity = '1';
+                    seat.style.filter = 'none';
+                    // Re-apply original background if filtered out, then back
+                    const studentInfo = METADATA_DATA[seat.dataset.id] || {};
+                    if (studentInfo.Department && deptColors[studentInfo.Department]) {
+                        seat.style.backgroundColor = deptColors[studentInfo.Department];
+                    } else {
+                        seat.style.backgroundColor = '#e0f2f7'; // Default occupied color
+                    }
+                } else {
+                    seat.style.opacity = '0.3';
+                    seat.style.filter = 'grayscale(100%)';
+                    seat.style.backgroundColor = '#f5f5f5'; // Light gray for filtered out
+                }
+            });
+        }
+
+        function highlightStudentFromURL() {
+            const highlightId = getHighlightedStudent();
+            if (highlightId) {
+                const targetSeat = document.querySelector(`.seat[data-id="${highlightId}"]`);
+                if (targetSeat) {
+                    targetSeat.classList.add('highlighted-student');
+                    targetSeat.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }
+
+        // --- Event Listeners ---
+        roomSelect.addEventListener('change', (e) => renderRoom(e.target.value));
+        searchInput.addEventListener('input', applyFilters);
+        timeFilter.addEventListener('change', applyFilters);
+        yearFilter.addEventListener('change', applyFilters);
+        branchFilter.addEventListener('change', applyFilters);
+
+        exportCsvBtn.addEventListener('click', () => {
+            const currentRoomName = roomSelect.value;
+            const dataToExport = currentRoomData.map(seat => {
+                const studentInfo = METADATA_DATA[seat.student_id] || {};
+                return {
+                    'Room Name': currentRoomName,
+                    'Seat No': seat.seat_no,
+                    'Student ID': seat.student_id,
+                    'Student Name': studentInfo.Name || '',
+                    'Department': studentInfo.Department || '',
+                    'Branch': studentInfo.Branch || '',
+                    'Year': studentInfo.Year || '',
+                    'Subject': studentInfo.Subject || '',
+                    'Exam Date': studentInfo.ExamDate || '',
+                    'Exam Time': studentInfo.ExamTime || ''
+                };
+            });
+
+            if (dataToExport.length === 0) {
+                alert('No students in this room to export.');
+                return;
+            }
+
+            // Basic CSV generation
+            let csvContent = "data:text/csv;charset=utf-8,";
+            const headers = Object.keys(dataToExport[0]);
+            csvContent += headers.join(',') + '\n';
+            dataToExport.forEach(row => {
+                const values = headers.map(header => {
+                    const value = row[header];
+                    // Handle commas and quotes in data
+                    return typeof value === 'string' && (value.includes(',') || value.includes('"'))
+                        ? `"${value.replace(/"/g, '""')}"`
+                        : value;
+                });
+                csvContent += values.join(',') + '\n';
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', `${currentRoomName}_seating_export.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // --- Swap Mode (for Teacher, but functionality could be built in if enabled) ---
+        // For admin dashboard, this remains hidden.
+        if (isTeacherModeEnabled()) {
+            modeToggleContainer.style.display = 'block'; // Show the toggle container
+            teacherModeCheckbox.addEventListener('change', function() {
+                swappingMode = this.checked;
+                swapControls.classList.toggle('hidden', !swappingMode);
+                if (!swappingMode) {
+                    resetSwap();
+                } else {
+                    seatingGrid.classList.add('teacher-mode');
+                }
+            });
+
+            resetSwapBtn.addEventListener('click', resetSwap);
+
+            seatingGrid.addEventListener('click', function(event) {
+                if (!swappingMode) return;
+
+                const seatDiv = event.target.closest('.seat.occupied');
+                if (!seatDiv) return;
+
+                if (!firstSwapStudent) {
+                    firstSwapStudent = seatDiv;
+                    firstSwapStudent.classList.add('swapping');
+                } else if (seatDiv !== firstSwapStudent) {
+                    secondSwapStudent = seatDiv;
+                    secondSwapStudent.classList.add('swapping');
+                    // Perform swap logic here
+                    performSwap(firstSwapStudent, secondSwapStudent);
+                    resetSwap();
+                } else {
+                    // Clicking the same student again resets
+                    resetSwap();
+                }
+            });
+        }
+
+
+        function performSwap(seat1, seat2) {
+            const studentId1 = seat1.dataset.id;
+            const studentId2 = seat2.dataset.id;
+
+            // In a real application, you would send an AJAX request to your Flask backend
+            // to update the database (final_layout, metadata) and then reload the data.
+            alert(`Swapping ${studentId1} with ${studentId2}. (Backend implementation needed)`);
+
+            // For client-side visual swap (won't persist without backend update)
+            const tempHTML = seat1.innerHTML;
+            const tempDataset = { ...seat1.dataset };
+            const tempStyle = seat1.style.cssText;
+
+            seat1.innerHTML = seat2.innerHTML;
+            seat1.dataset.id = seat2.dataset.id;
+            seat1.dataset.name = seat2.dataset.name;
+            seat1.dataset.department = seat2.dataset.department;
+            seat1.dataset.branch = seat2.dataset.branch;
+            seat1.dataset.year = seat2.dataset.year;
+            seat1.dataset.subject = seat2.dataset.subject;
+            seat1.dataset.examTime = seat2.dataset.examTime;
+            seat1.style.cssText = seat2.style.cssText; // Copy styles
+
+            seat2.innerHTML = tempHTML;
+            seat2.dataset.id = tempDataset.id;
+            seat2.dataset.name = tempDataset.name;
+            seat2.dataset.department = tempDataset.department;
+            seat2.dataset.branch = tempDataset.branch;
+            seat2.dataset.year = tempDataset.year;
+            seat2.dataset.subject = tempDataset.subject;
+            seat2.dataset.examTime = tempDataset.examTime;
+            seat2.style.cssText = tempStyle; // Copy styles
+        }
+
+        function resetSwap() {
+            if (firstSwapStudent) {
+                firstSwapStudent.classList.remove('swapping');
+                firstSwapStudent = null;
+            }
+            if (secondSwapStudent) {
+                secondSwapStudent.classList.remove('swapping');
+                secondSwapStudent = null;
+            }
+            seatingGrid.classList.remove('teacher-mode'); // Remove teacher-mode class
+        }
+
+        // --- Initialization ---
+        generateDepartmentColors();
+        renderLegend();
+
+        // Populate room select
+        if (ROOM_NAMES_DATA.length > 0) {
+            ROOM_NAMES_DATA.forEach(room => {
+                const option = document.createElement('option');
+                option.value = room;
+                option.textContent = room;
+                roomSelect.appendChild(option);
+            });
+            roomSelect.value = ROOM_NAMES_DATA[0]; // Select the first room by default
+            renderRoom(ROOM_NAMES_DATA[0]);
+        } else {
+            seatingGrid.innerHTML = `<p class="text-gray-600">No rooms available. Please ensure exam data is processed.</p>`;
+            roomTitle.textContent = "No Seating Data";
+        }
+
+    </script>
+</body>
+</html>

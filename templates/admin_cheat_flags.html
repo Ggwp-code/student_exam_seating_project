@@ -1,0 +1,102 @@
+{% extends "base_retro.html" %}
+
+{% block title %}Cheat Detection - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[!] Cheat Detection Flags</h1>
+</div>
+
+{% if fallback %}
+<div class="alert alert-warning mb-2">
+    <span>[!]</span> PostgreSQL not configured. Cheat detection requires PostgreSQL database setup.
+</div>
+{% endif %}
+
+<!-- Toggle Buttons -->
+<div class="mb-2">
+    <a href="{{ url_for('admin_cheat_flags', reviewed='false') }}"
+       class="btn {% if not showing_reviewed %}btn-primary{% endif %}">
+        [?] Pending Review
+    </a>
+    <a href="{{ url_for('admin_cheat_flags', reviewed='true') }}"
+       class="btn {% if showing_reviewed %}btn-primary{% endif %}">
+        [OK] Reviewed
+    </a>
+</div>
+
+<!-- Flags List -->
+<div class="card">
+    <div class="card-header">
+        <h3>[*] {% if showing_reviewed %}Reviewed{% else %}Pending{% endif %} Flags</h3>
+    </div>
+    <div class="card-body">
+        {% if flags %}
+        {% for flag, exam, student in flags %}
+        <div class="card mb-1 {% if flag.severity == 'critical' or flag.severity == 'high' %}border-danger{% endif %}" style="{% if flag.severity == 'critical' %}border-left: 4px solid var(--accent-red);{% elif flag.severity == 'high' %}border-left: 4px solid var(--accent-yellow);{% endif %}">
+            <div class="card-body">
+                <div class="flex-between">
+                    <div>
+                        <span class="badge badge-{% if flag.severity == 'critical' %}red{% elif flag.severity == 'high' %}red{% elif flag.severity == 'medium' %}warning{% else %}gray{% endif %}">
+                            {{ flag.severity }}
+                        </span>
+                        <span class="text-sm"><strong>{{ flag.flag_type }}</strong></span>
+
+                        <p class="mb-1 mt-1">
+                            <strong>Exam:</strong> <code>{{ exam.exam_code }}</code> - {{ exam.name }}
+                        </p>
+                        <p class="mb-1">
+                            <strong>Students:</strong>
+                            {{ flag.student1.name if flag.student1 else 'Unknown' }}
+                            (<code>{{ flag.student1.student_id if flag.student1 else '-' }}</code>)
+                            <span style="color: var(--accent-red);">&harr;</span>
+                            {{ flag.student2.name if flag.student2 else 'Unknown' }}
+                            (<code>{{ flag.student2.student_id if flag.student2 else '-' }}</code>)
+                        </p>
+                        {% if flag.details %}
+                        <p class="text-sm text-muted mb-0">Details: {{ flag.details }}</p>
+                        {% endif %}
+                        <p class="text-sm text-muted mb-0">
+                            Flagged: {{ flag.created_at.strftime('%Y-%m-%d %H:%M') if flag.created_at else 'N/A' }}
+                            {% if flag.reviewed %}
+                            | Reviewed by {{ flag.reviewer.username if flag.reviewer else 'Unknown' }}
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    {% if not flag.reviewed %}
+                    <div style="min-width: 200px;">
+                        <form action="{{ url_for('review_cheat_flag', flag_id=flag.id) }}" method="POST">
+                            <div class="form-group">
+                                <textarea name="notes" placeholder="Resolution notes..." rows="2" class="form-control" style="font-size: 12px;"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success btn-sm" style="width: 100%;">
+                                [OK] Mark Reviewed
+                            </button>
+                        </form>
+                    </div>
+                    {% else %}
+                    {% if flag.resolution_notes %}
+                    <div class="card" style="min-width: 200px; background: var(--bg-secondary);">
+                        <div class="card-body text-sm">
+                            {{ flag.resolution_notes }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="text-center py-4">
+            <div class="text-mono" style="font-size: 48px; color: var(--accent-green);">[OK]</div>
+            <p class="text-muted">No {% if showing_reviewed %}reviewed{% else %}pending{% endif %} flags.</p>
+            {% if not showing_reviewed %}
+            <p class="text-sm text-muted">Friend adjacency violations will appear here when detected during seating generation.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

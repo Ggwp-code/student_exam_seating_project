@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Exam Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/retro.css') }}">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--bg-primary);
+        }
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .login-icon {
+            font-family: 'VT323', monospace;
+            font-size: 64px;
+            color: var(--accent-blue);
+            margin-bottom: 8px;
+        }
+        .login-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        .login-subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+        .login-footer {
+            text-align: center;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 2px dashed var(--border-light);
+        }
+        .login-footer a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+        .checkbox-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .checkbox-row label {
+            display: inline;
+            margin: 0;
+        }
+        .checkbox-row a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .checkbox-row a:hover {
+            color: var(--accent-blue);
+        }
+        #totpSection {
+            display: none;
+        }
+        #totpSection.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1 class="login-title">Exam Management</h1>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    <span>[{% if category == 'success' %}OK{% elif category == 'danger' %}!!{% else %}**{% endif %}]</span>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <div class="card">
+            <div class="card-header">
+                <h3>[>] Sign In</h3>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('login') }}" method="post">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required
+                               class="form-control" placeholder="Enter your username">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required
+                               class="form-control" placeholder="********">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="role">Login As</label>
+                        <select id="role" name="role" required class="form-control">
+                            <option value="">-- Select Role --</option>
+                            <option value="admin">Administrator</option>
+                            <option value="teacher">Teacher</option>
+                            <option value="student">Student</option>
+                        </select>
+                    </div>
+
+                    <div id="totpSection" class="form-group">
+                        <label for="totp">2FA Code <span class="badge badge-blue">Required</span></label>
+                        <input type="text" id="totp" name="totp"
+                               class="form-control" placeholder="6-digit code"
+                               pattern="\d{6}" maxlength="6">
+                    </div>
+
+                    <div class="checkbox-row">
+                        <label>
+                            <input type="checkbox" id="remember" name="remember">
+                            Remember me
+                        </label>
+                        <a href="#">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        [>] Sign In
+                    </button>
+                </form>
+
+                <div class="login-footer">
+                    New student? <a href="/register">Create account</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const roleSelect = document.getElementById('role');
+            const totpSection = document.getElementById('totpSection');
+            const totpInput = document.getElementById('totp');
+
+            function toggle2FA() {
+                if (roleSelect.value === 'admin' || roleSelect.value === 'teacher') {
+                    totpSection.classList.add('show');
+                    totpInput.setAttribute('required', 'required');
+                } else {
+                    totpSection.classList.remove('show');
+                    totpInput.removeAttribute('required');
+                }
+            }
+
+            roleSelect.addEventListener('change', toggle2FA);
+            toggle2FA();
+        });
+    </script>
+</body>
+</html>

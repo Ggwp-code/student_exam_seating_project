@@ -1,0 +1,202 @@
+{% extends "base_retro.html" %}
+
+{% block title %}Exams - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>[E] Exam Management</h1>
+    </div>
+    <div class="flex gap-1">
+        <form action="{{ url_for('admin_sync_exams') }}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-success" title="Sync exams from CSV and enroll students">[~] Sync CSV</button>
+        </form>
+        <form action="{{ url_for('admin_generate_seating') }}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-primary" title="Generate seating layouts for all sessions">[G] Generate Seating</button>
+        </form>
+        <a href="{{ url_for('admin_manage_exams') }}" class="btn">
+            [S] Assign Sections
+        </a>
+    </div>
+</div>
+
+<!-- Create New Exam -->
+<div class="card mb-2">
+    <div class="card-header">
+        <h3>[+] Create New Exam</h3>
+    </div>
+    <div class="card-body">
+        <form action="{{ url_for('admin_create_exam') }}" method="POST">
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">[>] Exam Code <span class="text-danger">*</span></label>
+                    <input type="text" name="exam_code" required placeholder="e.g., CSE-DS-2025-JUN" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">[>] Exam Name <span class="text-danger">*</span></label>
+                    <input type="text" name="exam_name" required placeholder="e.g., Data Structures Mid-Term" class="form-control">
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">[>] Subject <span class="text-danger">*</span></label>
+                    <input type="text" name="subject" required placeholder="e.g., Data Structures" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">[>] Duration (minutes)</label>
+                    <input type="number" name="duration" value="180" min="30" max="360" class="form-control">
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">[>] Exam Date <span class="text-danger">*</span></label>
+                    <input type="date" name="exam_date" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">[>] Exam Time <span class="text-danger">*</span></label>
+                    <select name="exam_time" required class="form-control">
+                        <option value="Morning">Morning (9:00 AM - 12:00 PM)</option>
+                        <option value="Afternoon">Afternoon (1:00 PM - 4:00 PM)</option>
+                        <option value="Evening">Evening (5:00 PM - 8:00 PM)</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success">[+] Create Exam</button>
+        </form>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card mb-2">
+    <div class="card-header">
+        <h3>[*] Quick Test Exam</h3>
+    </div>
+    <div class="card-body">
+        <form action="{{ url_for('create_test_exam_all_students') }}" method="post" class="flex gap-2 flex-center">
+            <div class="form-group" style="flex:1; margin-bottom:0;">
+                <input type="text" name="subject" class="form-control" value="Test Exam - All Students" placeholder="Exam Name">
+            </div>
+            <div class="form-group" style="flex:1; margin-bottom:0;">
+                <input type="date" name="exam_date" class="form-control">
+            </div>
+            <div class="form-group" style="flex:0.5; margin-bottom:0;">
+                <select name="exam_time" class="form-select">
+                    <option value="Morning">Morning</option>
+                    <option value="Afternoon">Afternoon</option>
+                    <option value="Evening">Evening</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success">[+] Create Test (All Students)</button>
+        </form>
+        <p class="text-sm text-muted mt-1">Creates a test exam and enrolls ALL students from CSV. Use <a href="{{ url_for('admin_manage_exams') }}">Section Assignment</a> to assign specific sections.</p>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card">
+    <div class="card-header">
+        <h3>[?] Filter Exams</h3>
+    </div>
+    <div class="card-body">
+        <form method="get" class="flex gap-2 flex-center">
+            <div class="form-group" style="flex:1; margin-bottom:0;">
+                <select name="department" class="form-select">
+                    <option value="">-- All Departments --</option>
+                    {% if departments %}
+                        {% for dept in departments %}
+                            <option value="{{ dept.id }}" {% if current_dept == dept.id|string %}selected{% endif %}>
+                                {{ dept.code }} - {{ dept.name }}
+                            </option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+            <div class="form-group" style="flex:1; margin-bottom:0;">
+                <input type="date" name="date" class="form-control" value="{{ current_date or '' }}" placeholder="Date">
+            </div>
+            <button type="submit" class="btn btn-primary">[/] Filter</button>
+            <a href="{{ url_for('admin_exams') }}" class="btn">Clear</a>
+        </form>
+    </div>
+</div>
+
+<!-- Exams List -->
+<div class="card">
+    <div class="card-header">
+        <h3>[=] Exams</h3>
+        {% if exams and exams.items %}
+            <span class="badge badge-blue">{{ exams.total }} total</span>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        {% if fallback %}
+            <div class="alert alert-warning">
+                [!!] PostgreSQL not configured. Please set up the database connection.
+            </div>
+        {% elif exams and exams.items %}
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Subject</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Students</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for exam in exams.items %}
+                            <tr>
+                                <td><code>{{ exam.exam_code }}</code></td>
+                                <td>{{ exam.name }}</td>
+                                <td>{{ exam.subject }}</td>
+                                <td class="text-mono">{{ exam.exam_date.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    <span class="badge {% if exam.exam_time.value == 'Morning' %}badge-yellow{% elif exam.exam_time.value == 'Afternoon' %}badge-blue{% else %}badge-gray{% endif %}">
+                                        {{ exam.exam_time.value }}
+                                    </span>
+                                </td>
+                                <td class="text-mono">{{ exam.total_students }}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{{ url_for('view_exam', exam_id=exam.id) }}" class="btn btn-sm" title="View">[O]</a>
+                                        <a href="{{ url_for('edit_exam', exam_id=exam.id) }}" class="btn btn-sm" title="Edit">[~]</a>
+                                        <a href="{{ url_for('exam_seating_history', exam_id=exam.id) }}" class="btn btn-sm" title="History">[H]</a>
+                                        <a href="{{ url_for('export_seating_excel', exam_id=exam.id) }}" class="btn btn-sm btn-success" title="Export">[v]</a>
+                                        <form action="{{ url_for('delete_exam', exam_id=exam.id) }}" method="post" style="display:inline" onsubmit="return confirm('Delete this exam?')">
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Delete">[x]</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if exams.pages > 1 %}
+                <div class="flex flex-center gap-1 mt-2" style="justify-content: center;">
+                    {% if exams.has_prev %}
+                        <a href="{{ url_for('admin_exams', page=exams.prev_num) }}" class="btn btn-sm">[<] Prev</a>
+                    {% endif %}
+                    <span class="text-muted text-sm">Page {{ exams.page }} of {{ exams.pages }}</span>
+                    {% if exams.has_next %}
+                        <a href="{{ url_for('admin_exams', page=exams.next_num) }}" class="btn btn-sm">Next [>]</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">[___]</div>
+                <p>No exams found.</p>
+                <p class="text-sm text-muted">Create your first exam to get started.</p>
+                <a href="{{ url_for('add_exam') }}" class="btn btn-primary mt-2">[+] Create Exam</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

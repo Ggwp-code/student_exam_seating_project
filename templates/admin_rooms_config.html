@@ -1,0 +1,203 @@
+{% extends "base_retro.html" %}
+
+{% block title %}Room Configurations - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header flex-between">
+    <h1>[R] Manage Room Configurations</h1>
+    <a href="{{ url_for('admin_add_room_config') }}" class="btn btn-success">[+] Add New Room</a>
+</div>
+
+<!-- Stats -->
+{% set ns = namespace(total_capacity=0, assigned_count=0) %}
+{% for room in rooms %}
+    {% set ns.total_capacity = ns.total_capacity + room[2] %}
+{% endfor %}
+{% if users is defined %}
+    {% for room in rooms %}
+        {% for user in users if user.assigned_room == room[1] %}
+            {% set ns.assigned_count = ns.assigned_count + 1 %}
+        {% endfor %}
+    {% endfor %}
+{% endif %}
+
+<div class="grid-4 mb-2">
+    <div class="card text-center">
+        <div class="card-body">
+            <div class="stat-value text-primary">{{ rooms|length }}</div>
+            <div class="stat-label">Total Rooms</div>
+        </div>
+    </div>
+    <div class="card text-center">
+        <div class="card-body">
+            <div class="stat-value text-success">{{ ns.total_capacity }}</div>
+            <div class="stat-label">Total Capacity</div>
+        </div>
+    </div>
+    <div class="card text-center">
+        <div class="card-body">
+            <div class="stat-value" style="color: var(--accent-purple);">{{ ns.assigned_count }}</div>
+            <div class="stat-label">Assigned</div>
+        </div>
+    </div>
+    <div class="card text-center">
+        <div class="card-body">
+            <div class="stat-value" style="color: var(--accent-yellow);">
+                {% if rooms|length > 0 %}{{ (ns.total_capacity / rooms|length)|round(1) }}{% else %}0{% endif %}
+            </div>
+            <div class="stat-label">Avg. Capacity</div>
+        </div>
+    </div>
+</div>
+
+{% if rooms %}
+<div class="card">
+    <div class="card-header">
+        <h3>[*] Room List</h3>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Room</th>
+                    <th>Capacity</th>
+                    <th>Constraints</th>
+                    <th>Years</th>
+                    <th>Branches</th>
+                    <th>Layout</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for room in rooms %}
+                <tr>
+                    <td>
+                        <strong>{{ room[1] }}</strong><br>
+                        <span class="text-muted text-sm">ID: {{ room[0] }}</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-{% if room[2] >= 50 %}red{% elif room[2] >= 30 %}warning{% else %}green{% endif %}">
+                            {{ room[2] }} seats
+                        </span>
+                    </td>
+                    <td class="text-sm">
+                        [B] {{ room[3] if room[3] is not none else 'oo' }} subjects<br>
+                        [G] {{ room[4] if room[4] is not none else 'oo' }} branches
+                    </td>
+                    <td>
+                        {% if room[5] %}
+                            {% for year in room[5].split(',') %}
+                                <span class="badge badge-blue">Y{{ year }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="badge badge-gray">All</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if room[6] %}
+                            {% for branch in room[6].split(',') %}
+                                <span class="badge" style="background: var(--accent-purple); color: white;">{{ branch }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="badge badge-gray">All</span>
+                        {% endif %}
+                    </td>
+                    <td><code>{{ room[7] if room|length > 7 else 6 }}x{{ room[8] if room|length > 8 else 5 }}</code></td>
+                    <td>
+                        {% set room_name = room[1] %}
+                        {% set is_assigned = false %}
+                        {% if users is defined %}
+                            {% for user in users if user.assigned_room == room_name %}
+                                {% set is_assigned = true %}
+                            {% endfor %}
+                        {% endif %}
+
+                        {% if is_assigned %}
+                            <span class="badge badge-green">Assigned</span>
+                        {% else %}
+                            <span class="badge badge-warning">Available</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('admin_edit_room_config', room_id=room[0]) }}" class="btn btn-sm">[~]</a>
+                        <button onclick="confirmRoomDelete('{{ room[1] }}', {{ room[0] }})" class="btn btn-sm btn-danger">[x]</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-4">
+        <div class="text-mono" style="font-size: 48px; color: var(--text-muted);">[R]</div>
+        <h4>No rooms configured</h4>
+        <p class="text-muted">Get started by creating your first room configuration.</p>
+        <a href="{{ url_for('admin_add_room_config') }}" class="btn btn-primary mt-2">[+] Add Room</a>
+    </div>
+</div>
+{% endif %}
+
+<div class="alert alert-info mt-2">
+    <span>[?]</span> <strong>Room Configuration Guidelines:</strong>
+    <ul style="margin: 8px 0 0 24px; padding: 0;">
+        <li><strong>Capacity:</strong> Should match actual physical seats</li>
+        <li><strong>Layout:</strong> Columns x Rows should be >= Capacity</li>
+        <li><strong>Constraints:</strong> Lower max subjects/branches helps reduce conflicts</li>
+    </ul>
+</div>
+
+<!-- Delete Modal -->
+<div id="deleteRoomModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+        <div class="card" style="width: 400px;">
+            <div class="card-header">
+                <h3>[!] Confirm Deletion</h3>
+            </div>
+            <div class="card-body">
+                <p>Are you sure you want to delete room <strong id="deleteRoomName"></strong>?</p>
+                <div class="alert alert-warning mb-2">
+                    <span>[!]</span> Rooms assigned to teachers cannot be deleted.
+                </div>
+                <div class="flex-between">
+                    <button onclick="closeRoomDeleteModal()" class="btn">[<] Cancel</button>
+                    <button onclick="executeRoomDelete()" class="btn btn-danger">[x] Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let deleteRoomId = null;
+
+    function confirmRoomDelete(roomName, roomId) {
+        document.getElementById('deleteRoomName').textContent = roomName;
+        deleteRoomId = roomId;
+        document.getElementById('deleteRoomModal').style.display = 'block';
+    }
+
+    function closeRoomDeleteModal() {
+        document.getElementById('deleteRoomModal').style.display = 'none';
+        deleteRoomId = null;
+    }
+
+    function executeRoomDelete() {
+        if (deleteRoomId) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/admin/delete_room_config/' + deleteRoomId;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    document.getElementById('deleteRoomModal').addEventListener('click', function(e) {
+        if (e.target === this) closeRoomDeleteModal();
+    });
+</script>
+{% endblock %}

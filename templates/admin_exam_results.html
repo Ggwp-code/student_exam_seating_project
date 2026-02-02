@@ -1,0 +1,132 @@
+{% extends "base_retro.html" %}
+
+{% block title %}Exam Results - {{ exam.name }} - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[!] Exam Results & Cheat Detection</h1>
+</div>
+
+<div class="grid-2">
+    <!-- Upload Results -->
+    <div class="card">
+        <div class="card-header">
+            <h3>[^] Import Results</h3>
+        </div>
+        <div class="card-body">
+            <p class="text-muted text-sm mb-2">
+                Upload exam results to detect suspicious patterns among adjacent students.
+            </p>
+            <form method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>Results File (Excel/CSV)</label>
+                    <input type="file" class="form-control" name="results_file"
+                           accept=".xlsx,.xls,.csv" required>
+                    <small class="text-muted">Required columns: <code>StudentID</code>, <code>Score</code></small>
+                </div>
+                <button type="submit" class="btn btn-warning">
+                    [?] Analyze Results
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Detection Info -->
+    <div class="card">
+        <div class="card-header">
+            <h3>[?] Detection Methods</h3>
+        </div>
+        <div class="card-body">
+            <ul style="list-style: none; padding: 0; margin: 0;">
+                <li class="mb-1">
+                    <span class="text-success">[OK]</span>
+                    <strong>Adjacent Score Similarity</strong>
+                    <p class="text-muted text-sm mb-0" style="margin-left: 32px;">
+                        Flags students sitting adjacent with very similar scores
+                    </p>
+                </li>
+                <li class="mb-1">
+                    <span class="text-success">[OK]</span>
+                    <strong>Known Friends Check</strong>
+                    <p class="text-muted text-sm mb-0" style="margin-left: 32px;">
+                        Cross-references with registered friend pairs
+                    </p>
+                </li>
+                <li class="mb-1">
+                    <span class="text-muted">[..]</span>
+                    <strong>Answer Pattern Analysis</strong>
+                    <p class="text-muted text-sm mb-0" style="margin-left: 32px;">
+                        Future: Compare answer sequences (requires answer data)
+                    </p>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Detected Flags -->
+{% if flags %}
+    <div class="card mt-2">
+        <div class="card-header flex-between">
+            <h3>[!] Detected Suspicious Patterns</h3>
+            <span class="badge badge-warning">{{ flags|length }} flags</span>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Students</th>
+                        <th>Severity</th>
+                        <th>Details</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for flag in flags %}
+                        <tr style="{% if flag.severity == 'critical' %}background: rgba(234, 67, 53, 0.1);{% elif flag.severity == 'high' %}background: rgba(251, 188, 5, 0.1);{% endif %}">
+                            <td>{{ flag.flag_type }}</td>
+                            <td>
+                                <code>{{ flag.student1_id }}</code>
+                                {% if flag.student2_id %}
+                                    & <code>{{ flag.student2_id }}</code>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge badge-{% if flag.severity == 'critical' %}red{% elif flag.severity == 'high' %}red{% elif flag.severity == 'medium' %}warning{% else %}gray{% endif %}">
+                                    {{ flag.severity }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if flag.details %}
+                                    {% if flag.details.score1 %}
+                                        <span class="text-sm">
+                                            Scores: {{ flag.details.score1 }} / {{ flag.details.score2 }}
+                                            (diff: {{ flag.details.difference }})
+                                        </span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if flag.reviewed %}
+                                    <span class="badge badge-green">Reviewed</span>
+                                {% else %}
+                                    <span class="badge badge-gray">Pending</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% else %}
+    <div class="card mt-2">
+        <div class="card-body text-center py-4">
+            <div class="text-mono" style="font-size: 48px; color: var(--accent-green);">[OK]</div>
+            <h4 class="mt-1">No Suspicious Patterns Detected</h4>
+            <p class="text-muted">Upload results to analyze for potential cheating patterns.</p>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

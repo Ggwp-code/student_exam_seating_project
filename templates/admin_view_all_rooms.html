@@ -1,0 +1,137 @@
+{% extends "base_retro.html" %}
+
+{% block title %}All Rooms - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[#] All Rooms Overview</h1>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn">[<] Back to Dashboard</a>
+</div>
+
+<!-- Room Statistics -->
+<div class="grid-3 mb-2">
+    <div class="card text-center">
+        <div class="card-body">
+            <div class="stat-value text-primary">{{ rooms|length }}</div>
+            <div class="stat-label">Total Rooms</div>
+        </div>
+    </div>
+    <div class="card text-center">
+        <div class="card-body">
+            <div class="stat-value text-success">{{ total_capacity }}</div>
+            <div class="stat-label">Total Capacity</div>
+        </div>
+    </div>
+    <div class="card text-center">
+        <div class="card-body">
+            <div class="stat-value" style="color: var(--accent-purple);">{{ rooms_with_seating }}</div>
+            <div class="stat-label">Rooms with Seating</div>
+        </div>
+    </div>
+</div>
+
+<!-- Room Grid -->
+<div class="card">
+    <div class="card-header flex-between">
+        <h3>[R] Room Details</h3>
+        <a href="{{ url_for('admin_add_room_config') }}" class="btn btn-success btn-sm">[+] Add Room</a>
+    </div>
+    <div class="card-body">
+        {% if rooms %}
+        <div class="grid-3">
+            {% for room in rooms %}
+            <div class="card" style="margin-bottom: 0;">
+                <div class="card-header flex-between">
+                    <span><strong>{{ room.room_name }}</strong></span>
+                    <span class="badge badge-blue">{{ room.capacity }} seats</span>
+                </div>
+                <div class="card-body">
+                    <div class="grid-2" style="gap: 8px; margin-bottom: 12px;">
+                        <div>
+                            <p class="text-muted text-sm">Layout</p>
+                            <p><strong>{{ room.layout_columns }}x{{ room.layout_rows }}</strong></p>
+                        </div>
+                        <div>
+                            <p class="text-muted text-sm">Max Subjects</p>
+                            <p><strong>{{ room.max_subjects }}</strong></p>
+                        </div>
+                        <div>
+                            <p class="text-muted text-sm">Max Branches</p>
+                            <p><strong>{{ room.max_branches }}</strong></p>
+                        </div>
+                        <div>
+                            <p class="text-muted text-sm">Allowed Years</p>
+                            <p><strong>{{ room.allowed_years|join(', ') if room.allowed_years else 'All' }}</strong></p>
+                        </div>
+                    </div>
+
+                    <div class="btn-group" style="width: 100%; display: flex; gap: 4px;">
+                        <a href="{{ url_for('admin_edit_room_config', room_id=room.id) }}" class="btn btn-sm" style="flex: 1; text-align: center;">[~] Edit</a>
+                        {% if room.has_seating %}
+                        <a href="{{ url_for('static_html', filename='index.html') }}" target="_blank" class="btn btn-sm btn-primary" style="flex: 1; text-align: center;">[>] {{ room.session_count }} Sessions</a>
+                        {% else %}
+                        <span class="btn btn-sm" style="flex: 1; text-align: center; opacity: 0.5; cursor: not-allowed;">[?] No Layout</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">[?]</div>
+            <p>No rooms configured yet.</p>
+            <a href="{{ url_for('admin_add_room_config') }}" class="btn btn-success">[+] Add Your First Room</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Room Table View -->
+<div class="card">
+    <div class="card-header">
+        <h3>[=] Room Table</h3>
+    </div>
+    <div class="card-body">
+        {% if rooms %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Room Name</th>
+                    <th>Layout</th>
+                    <th>Capacity</th>
+                    <th>Max Subjects</th>
+                    <th>Max Branches</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for room in rooms %}
+                <tr>
+                    <td><strong>{{ room.room_name }}</strong></td>
+                    <td><code>{{ room.layout_columns }}x{{ room.layout_rows }}</code></td>
+                    <td><span class="badge badge-blue">{{ room.capacity }}</span></td>
+                    <td>{{ room.max_subjects }}</td>
+                    <td>{{ room.max_branches }}</td>
+                    <td>
+                        {% if room.has_seating %}
+                        <span class="badge badge-green">Active</span>
+                        {% else %}
+                        <span class="badge badge-gray">Empty</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('admin_edit_room_config', room_id=room.id) }}" class="btn btn-sm">[~]</a>
+                        {% if room.has_seating %}
+                        <a href="{{ url_for('static_html', filename='index.html') }}" target="_blank" class="btn btn-sm btn-primary">[>] {{ room.session_count }}</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

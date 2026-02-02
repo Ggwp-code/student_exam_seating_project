@@ -1,0 +1,96 @@
+{% extends "base_retro.html" %}
+
+{% block title %}My Preferences - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[P] My Preferences</h1>
+    <span class="badge badge-green">{{ username }}</span>
+</div>
+
+<form method="POST">
+    <div class="grid-2">
+        <!-- Time Preferences -->
+        <div class="card">
+            <div class="card-header">
+                <h3>[T] Preferred Time Slots</h3>
+            </div>
+            <div class="card-body">
+                <p class="text-sm text-muted mb-2">Select your preferred invigilation time slots:</p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" name="preferred_times" value="Morning"
+                               {% if 'Morning' in preferences.preferred_times %}checked{% endif %}>
+                        <span class="badge badge-yellow">Morning</span>
+                        <span class="text-sm text-muted">9:00 AM - 12:00 PM</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" name="preferred_times" value="Afternoon"
+                               {% if 'Afternoon' in preferences.preferred_times %}checked{% endif %}>
+                        <span class="badge badge-blue">Afternoon</span>
+                        <span class="text-sm text-muted">1:00 PM - 4:00 PM</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" name="preferred_times" value="Evening"
+                               {% if 'Evening' in preferences.preferred_times %}checked{% endif %}>
+                        <span class="badge badge-green">Evening</span>
+                        <span class="text-sm text-muted">5:00 PM - 8:00 PM</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session Limits -->
+        <div class="card">
+            <div class="card-header">
+                <h3>[#] Session Limits</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">Maximum Sessions Per Day</label>
+                    <select name="max_sessions_per_day" class="form-control">
+                        {% for i in range(1, 4) %}
+                        <option value="{{ i }}" {% if preferences.max_sessions_per_day == i %}selected{% endif %}>
+                            {{ i }} session{% if i > 1 %}s{% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <p class="text-sm text-muted mt-1">Admin will try to respect this limit when assigning</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unavailable Dates -->
+    <div class="card mb-2">
+        <div class="card-header">
+            <h3>[X] Unavailable Dates</h3>
+        </div>
+        <div class="card-body">
+            <div class="form-group">
+                <label class="form-label">Dates You Cannot Invigilate</label>
+                <textarea name="unavailable_dates" class="form-control" rows="3"
+                          placeholder="Enter dates (one per line) in YYYY-MM-DD format, e.g., 2024-03-15">{{ preferences.unavailable_dates }}</textarea>
+                <p class="text-sm text-muted mt-1">Enter each date on a new line. These will be communicated to admin.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Box -->
+    <div class="alert alert-info mb-2">
+        <span>[i]</span>
+        <div>
+            <strong>Note:</strong> These preferences are requests and may not always be accommodated due to scheduling constraints.
+            The scheduling algorithm will try its best to respect your preferences.
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="card">
+        <div class="card-body flex-between">
+            <button type="submit" class="btn btn-success">[OK] Save Preferences</button>
+            <a href="{{ url_for('teacher_dashboard') }}" class="btn">[<] Back to Dashboard</a>
+        </div>
+    </div>
+</form>
+{% endblock %}

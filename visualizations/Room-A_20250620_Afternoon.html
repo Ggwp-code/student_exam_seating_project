@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Room-A - 2025-06-20 Afternoon Seating Chart</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #f5f5f0;
+            --bg-secondary: #ebebdf;
+            --bg-card: #fafaf5;
+            --border-color: #8b8b7a;
+            --border-dark: #5c5c4f;
+            --border-light: #d4d4c8;
+            --text-primary: #2d2d2a;
+            --text-secondary: #5c5c4f;
+            --text-muted: #8b8b7a;
+            --accent-blue: #4a7c9b;
+            --accent-green: #5c8a4d;
+            --accent-red: #9b4a4a;
+            --accent-yellow: #b8a44a;
+            --accent-purple: #7a5c8a;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 24px;
+            margin: 0;
+            min-height: 100vh;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-3px); }
+            75% { transform: translateX(3px); }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 3px 3px 0 var(--border-dark), 0 0 5px rgba(155, 74, 74, 0.3); }
+            50% { box-shadow: 3px 3px 0 var(--border-dark), 0 0 15px rgba(155, 74, 74, 0.5); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 22px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+            color: var(--text-primary);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px dashed var(--border-light);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 3px solid var(--border-color);
+            box-shadow: 3px 3px 0 var(--border-dark);
+            margin-bottom: 20px;
+            animation: fadeIn 0.4s ease-out;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .card:hover {
+            transform: translate(-1px, -1px);
+            box-shadow: 4px 4px 0 var(--border-dark);
+        }
+
+        .card-header {
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border-bottom: 2px solid var(--border-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            border: 2px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            cursor: pointer;
+            box-shadow: 2px 2px 0 var(--border-dark), inset 1px 1px 0 #fff;
+            text-decoration: none;
+            transition: background 0.15s ease, transform 0.1s ease;
+        }
+
+        .btn:hover { background: var(--bg-secondary); }
+
+        .btn:active {
+            box-shadow: inset 2px 2px 0 var(--border-dark);
+            transform: translate(1px, 1px);
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+            border-color: #3a6680;
+        }
+
+        .btn-danger {
+            background: var(--accent-red);
+            color: white;
+            border-color: #7a3a3a;
+        }
+
+        .btn-success {
+            background: var(--accent-green);
+            color: white;
+            border-color: #4a7040;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            border: 1px solid;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: transform 0.15s ease;
+        }
+
+        .badge:hover { transform: scale(1.05); }
+
+        .badge-blue { background: #d4e5f0; color: var(--accent-blue); border-color: var(--accent-blue); }
+        .badge-green { background: #d4e8d0; color: var(--accent-green); border-color: var(--accent-green); }
+        .badge-yellow { background: #f0ecd4; color: #8a7a3a; border-color: var(--accent-yellow); }
+        .badge-red { background: #f0d4d4; color: var(--accent-red); border-color: var(--accent-red); }
+        .badge-purple { background: #e8d8f0; color: var(--accent-purple); border-color: var(--accent-purple); }
+
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .grid-container {
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(10, 120px);
+            gap: 12px;
+            margin: 20px auto;
+            width: fit-content;
+            min-width: 1320px;
+        }
+
+        .seat {
+            position: relative;
+            width: 120px;
+            height: 110px;
+            background: var(--bg-card);
+            border: 3px solid var(--border-color);
+            box-shadow: 3px 3px 0 var(--border-dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: grab;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .seat:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 5px 5px 0 var(--border-dark);
+        }
+
+        .seat.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+            transform: scale(1.05);
+            z-index: 1000;
+        }
+
+        .seat.drag-over {
+            border-color: var(--accent-blue);
+            background: #e4f0f5;
+            box-shadow: 0 0 0 3px rgba(74, 124, 155, 0.3), 3px 3px 0 var(--border-dark);
+        }
+
+        .seat.selected {
+            border-color: var(--accent-red);
+            background: #f5e4e4;
+            box-shadow: 0 0 0 3px rgba(155, 74, 74, 0.2), 3px 3px 0 var(--border-dark);
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .seat.friend-highlight {
+            border-color: var(--accent-purple);
+            background: #f5e8ff;
+        }
+
+        .seat.friend-adjacent {
+            animation: glow 1.5s ease-in-out infinite;
+            border-color: var(--accent-red);
+        }
+
+        .seat.swap-success {
+            animation: pulse 0.5s ease-out;
+            border-color: var(--accent-green);
+            background: #e8f5e4;
+        }
+
+        .seat-number {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            font-family: 'VT323', monospace;
+            background: var(--bg-secondary);
+            padding: 2px 6px;
+            border: 1px solid var(--border-light);
+            color: var(--text-muted);
+        }
+
+        .time-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            font-family: 'VT323', monospace;
+            padding: 2px 4px;
+        }
+
+        .friend-badge {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            font-size: 9px;
+            font-weight: 600;
+            background: var(--accent-purple);
+            color: white;
+            padding: 2px 4px;
+            border-radius: 2px;
+            display: none;
+        }
+
+        .seat.has-friend .friend-badge {
+            display: block;
+        }
+
+        .student-info {
+            font-size: 11px;
+            padding: 5px;
+            line-height: 1.3;
+            margin-top: 8px;
+        }
+
+        .student-info strong {
+            color: var(--text-primary);
+            font-size: 12px;
+        }
+
+        .student-info small {
+            color: var(--text-muted);
+            font-size: 10px;
+        }
+
+        .tooltip {
+            visibility: hidden;
+            background: var(--bg-card);
+            border: 3px solid var(--border-color);
+            box-shadow: 3px 3px 0 var(--border-dark);
+            color: var(--text-primary);
+            text-align: left;
+            padding: 12px;
+            position: absolute;
+            z-index: 9999;
+            bottom: 100%;
+            margin-bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 220px;
+            font-size: 12px;
+            white-space: pre-line;
+            opacity: 0;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+        }
+
+        .tooltip::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid var(--border-color);
+        }
+
+        .seat:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .filter-controls {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .form-control {
+            padding: 8px 12px;
+            font-family: inherit;
+            font-size: 14px;
+            border: 2px solid var(--border-color);
+            background: white;
+            color: var(--text-primary);
+            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.1);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.1), 0 0 0 2px rgba(74, 124, 155, 0.2);
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            transition: transform 0.15s ease;
+            cursor: pointer;
+        }
+
+        .legend-item:hover {
+            transform: scale(1.05);
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border-color);
+            display: inline-block;
+            transition: transform 0.15s ease;
+        }
+
+        .constraint-grid {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .constraint-item {
+            background: var(--bg-secondary);
+            padding: 8px 12px;
+            border: 2px solid var(--border-color);
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 13px;
+            transition: transform 0.15s ease;
+        }
+
+        .constraint-item:hover {
+            transform: translate(-1px, -1px);
+        }
+
+        /* Toast notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 350px;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            border: 3px solid var(--border-color);
+            box-shadow: 4px 4px 0 var(--border-dark);
+            padding: 12px 16px;
+            animation: slideIn 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast-success { border-color: var(--accent-green); }
+        .toast-error { border-color: var(--accent-red); }
+        .toast-warning { border-color: var(--accent-yellow); }
+
+        .toast-icon {
+            font-family: 'VT323', monospace;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .swap-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-blue);
+            color: white;
+            padding: 12px 16px;
+            border: 3px solid #3a6680;
+            box-shadow: 3px 3px 0 var(--border-dark);
+            font-weight: 600;
+            display: none;
+            z-index: 1001;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .swap-status.active { display: block; }
+        .swap-status.selecting { background: var(--accent-yellow); border-color: #8a7a3a; }
+
+        .mode-toggle {
+            display: flex;
+            gap: 8px;
+        }
+
+        .divider {
+            border: none;
+            height: 2px;
+            background: repeating-linear-gradient(90deg, var(--border-color) 0px, var(--border-color) 4px, transparent 4px, transparent 8px);
+            margin: 16px 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .seat {
+                width: 100px;
+                height: 95px;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .btn, .swap-status, .toast-container { display: none !important; }
+            .card { break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="page-header">
+        <h1>[R] Room-A - 2025-06-20 Afternoon Seating</h1>
+        <div class="mode-toggle">
+            <button class="btn" id="friendToggle" onclick="toggleFriendHighlight()">[&] Show Friends</button>
+            <button class="btn" id="modeToggle" onclick="toggleSwapMode()">[~] Swap Mode</button>
+            <button class="btn" onclick="window.print()">[P] Print</button>
+        </div>
+    </div>
+
+    <div class="swap-status" id="swapStatus">
+        Drag a seat onto another to swap, or click two seats
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>[i] Room Constraints</h3>
+        </div>
+        <div class="card-body">
+            <div class="constraint-grid">
+                <div class="constraint-item">Max Subjects: 15</div>
+                <div class="constraint-item">Max Branches: 5</div>
+                <div class="constraint-item">Allowed Years: 1, 2, 3</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>[?] Filters</h3>
+        </div>
+        <div class="card-body">
+            <div class="filter-controls">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search by ID or Name...">
+                <select id="timeFilter" class="form-control">
+                    <option value="">All Times</option>
+                    <option value="Morning">[M] Morning</option>
+                    <option value="Afternoon">[A] Afternoon</option>
+                    <option value="Evening">[E] Evening</option>
+                </select>
+                <select id="yearFilter" class="form-control">
+                    <option value="all">All Years</option>
+                    <option value="2">2</option>
+                </select>
+                <select id="branchFilter" class="form-control">
+                    <option value="all">All Branches</option>
+                    <option value="Unknown">Unknown</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>[#] Department Legend</h3>
+        </div>
+        <div class="card-body">
+            <div class="legend">
+                <div class="legend-item" onclick="filterByDept('CS')"><span class="legend-color" style="background:#4a7c9b;"></span><span>CS</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>[=] Seating Grid</h3>
+            <div>
+                <span class="badge badge-blue">22 Students</span>
+                <span class="badge badge-purple" id="friendCount" style="display:none;">0 Friend Pairs</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="grid-container">
+                <div class="grid" id="seatingGrid">
+
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Python" data-dept="CS"
+                    data-id="1RV23CS062" data-name="bharath d" data-time="Afternoon"
+                    data-seat-no="1" data-position="0,0"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#1</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS062</strong><br><small>BHARATH D</small><br><small>Python</small>
+                    </div>
+                    <div class="tooltip">Name: BHARATH D\nSubject: Python\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Math" data-dept="CS"
+                    data-id="1RV23CS065" data-name="bhavin bhat" data-time="Afternoon"
+                    data-seat-no="2" data-position="1,0"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#2</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS065</strong><br><small>BHAVIN BHAT</small><br><small>Math</small>
+                    </div>
+                    <div class="tooltip">Name: BHAVIN BHAT\nSubject: Math\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Algorithms" data-dept="CS"
+                    data-id="1RV23CS068" data-name="brajesh pai p n" data-time="Afternoon"
+                    data-seat-no="3" data-position="2,0"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#3</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS068</strong><br><small>BRAJESH PAI P N</small><br><small>Algorithms</small>
+                    </div>
+                    <div class="tooltip">Name: BRAJESH PAI P N\nSubject: Algorithms\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Design" data-dept="CS"
+                    data-id="1RV23CS071" data-name="chaithanya shadakshari" data-time="Afternoon"
+                    data-seat-no="4" data-position="3,0"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#4</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS071</strong><br><small>CHAITHANYA SHAD...</small><br><small>Design</small>
+                    </div>
+                    <div class="tooltip">Name: CHAITHANYA SHADAKSHARI\nSubject: Design\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Python" data-dept="CS"
+                    data-id="1RV23CS074" data-name="chetan m patil" data-time="Afternoon"
+                    data-seat-no="5" data-position="4,0"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#5</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS074</strong><br><small>CHETAN M PATIL</small><br><small>Python</small>
+                    </div>
+                    <div class="tooltip">Name: CHETAN M PATIL\nSubject: Python\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Math" data-dept="CS"
+                    data-id="1RV23CS077" data-name="chirag sandesh shetty" data-time="Afternoon"
+                    data-seat-no="6" data-position="5,0"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#6</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS077</strong><br><small>CHIRAG SANDESH ...</small><br><small>Math</small>
+                    </div>
+                    <div class="tooltip">Name: CHIRAG SANDESH SHETTY\nSubject: Math\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Algorithms" data-dept="CS"
+                    data-id="1RV23CS080" data-name="d divyashree" data-time="Afternoon"
+                    data-seat-no="7" data-position="6,0"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#7</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS080</strong><br><small>D DIVYASHREE</small><br><small>Algorithms</small>
+                    </div>
+                    <div class="tooltip">Name: D DIVYASHREE\nSubject: Algorithms\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Design" data-dept="CS"
+                    data-id="1RV23CS083" data-name="darshan chavan" data-time="Afternoon"
+                    data-seat-no="8" data-position="7,0"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#8</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS083</strong><br><small>DARSHAN CHAVAN</small><br><small>Design</small>
+                    </div>
+                    <div class="tooltip">Name: DARSHAN CHAVAN\nSubject: Design\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Python" data-dept="CS"
+                    data-id="1RV23CS086" data-name="eshanye j" data-time="Afternoon"
+                    data-seat-no="9" data-position="8,0"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#9</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS086</strong><br><small>ESHANYE J</small><br><small>Python</small>
+                    </div>
+                    <div class="tooltip">Name: ESHANYE J\nSubject: Python\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Math" data-dept="CS"
+                    data-id="1RV23CS089" data-name="g c nikhil" data-time="Afternoon"
+                    data-seat-no="10" data-position="9,0"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#10</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS089</strong><br><small>G C NIKHIL</small><br><small>Math</small>
+                    </div>
+                    <div class="tooltip">Name: G C NIKHIL\nSubject: Math\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Algorithms" data-dept="CS"
+                    data-id="1RV23CS092" data-name="gorla rahul reddy" data-time="Afternoon"
+                    data-seat-no="11" data-position="0,1"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#11</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS092</strong><br><small>GORLA RAHUL RED...</small><br><small>Algorithms</small>
+                    </div>
+                    <div class="tooltip">Name: GORLA RAHUL REDDY\nSubject: Algorithms\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Design" data-dept="CS"
+                    data-id="1RV23CS095" data-name="harsh patel" data-time="Afternoon"
+                    data-seat-no="12" data-position="1,1"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#12</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS095</strong><br><small>HARSH PATEL</small><br><small>Design</small>
+                    </div>
+                    <div class="tooltip">Name: HARSH PATEL\nSubject: Design\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Python" data-dept="CS"
+                    data-id="1RV23CS098" data-name="harshith kumar s b" data-time="Afternoon"
+                    data-seat-no="13" data-position="2,1"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#13</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS098</strong><br><small>HARSHITH KUMAR ...</small><br><small>Python</small>
+                    </div>
+                    <div class="tooltip">Name: HARSHITH KUMAR S B\nSubject: Python\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Math" data-dept="CS"
+                    data-id="1RV23CS101" data-name="ian jem" data-time="Afternoon"
+                    data-seat-no="14" data-position="3,1"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#14</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS101</strong><br><small>IAN JEM</small><br><small>Math</small>
+                    </div>
+                    <div class="tooltip">Name: IAN JEM\nSubject: Math\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Algorithms" data-dept="CS"
+                    data-id="1RV23CS104" data-name="ishitha busetty" data-time="Afternoon"
+                    data-seat-no="15" data-position="4,1"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#15</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS104</strong><br><small>ISHITHA BUSETTY</small><br><small>Algorithms</small>
+                    </div>
+                    <div class="tooltip">Name: ISHITHA BUSETTY\nSubject: Algorithms\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Design" data-dept="CS"
+                    data-id="1RV23CS107" data-name="k mrudula reddy" data-time="Afternoon"
+                    data-seat-no="16" data-position="5,1"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#16</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS107</strong><br><small>K MRUDULA REDDY</small><br><small>Design</small>
+                    </div>
+                    <div class="tooltip">Name: K MRUDULA REDDY\nSubject: Design\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Python" data-dept="CS"
+                    data-id="1RV23CS110" data-name="kausshal ravikumaar" data-time="Afternoon"
+                    data-seat-no="17" data-position="6,1"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#17</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS110</strong><br><small>KAUSSHAL RAVIKU...</small><br><small>Python</small>
+                    </div>
+                    <div class="tooltip">Name: KAUSSHAL RAVIKUMAAR\nSubject: Python\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Math" data-dept="CS"
+                    data-id="1RV23CS114" data-name="krishang reddy" data-time="Afternoon"
+                    data-seat-no="18" data-position="7,1"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#18</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS114</strong><br><small>KRISHANG REDDY</small><br><small>Math</small>
+                    </div>
+                    <div class="tooltip">Name: KRISHANG REDDY\nSubject: Math\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Algorithms" data-dept="CS"
+                    data-id="1RV23CS117" data-name="kushal gowda c" data-time="Afternoon"
+                    data-seat-no="19" data-position="8,1"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#19</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS117</strong><br><small>KUSHAL GOWDA C</small><br><small>Algorithms</small>
+                    </div>
+                    <div class="tooltip">Name: KUSHAL GOWDA C\nSubject: Algorithms\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Design" data-dept="CS"
+                    data-id="1RV23CS120" data-name="lochan n s" data-time="Afternoon"
+                    data-seat-no="20" data-position="9,1"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#20</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS120</strong><br><small>LOCHAN N S</small><br><small>Design</small>
+                    </div>
+                    <div class="tooltip">Name: LOCHAN N S\nSubject: Design\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Math" data-dept="CS"
+                    data-id="1RV23CS307" data-name="medha sanketh" data-time="Afternoon"
+                    data-seat-no="21" data-position="0,2"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#21</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV23CS307</strong><br><small>MEDHA SANKETH</small><br><small>Math</small>
+                    </div>
+                    <div class="tooltip">Name: MEDHA SANKETH\nSubject: Math\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                
+                <div class="seat " style="border-left: 4px solid #4a7c9b;"
+                    data-year="2" data-branch="Unknown" data-subject="Python" data-dept="CS"
+                    data-id="1RV24CS406" data-name="harsha g gowda" data-time="Afternoon"
+                    data-seat-no="22" data-position="1,2"
+                    draggable="true"
+                    onclick="handleSeatClick(this)"
+                    ondragstart="handleDragStart(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event)">
+                    <div class="seat-number">#22</div>
+                    <div class="time-badge" style="color: #9b4a4a;">[A]</div>
+                    <div class="friend-badge">[&]</div>
+                    <div class="student-info">
+                        <strong>1RV24CS406</strong><br><small>HARSHA G GOWDA</small><br><small>Python</small>
+                    </div>
+                    <div class="tooltip">Name: HARSHA G GOWDA\nSubject: Python\nTime: Afternoon\nDept: CS\nYear: 2\nBranch: Unknown</div>
+                </div>
+                <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Friend pairs data
+    const friendPairs = [];
+    const friendMap = new Map();
+    friendPairs.forEach(([s1, s2]) => {
+        if (!friendMap.has(s1)) friendMap.set(s1, new Set());
+        if (!friendMap.has(s2)) friendMap.set(s2, new Set());
+        friendMap.get(s1).add(s2);
+        friendMap.get(s2).add(s1);
+    });
+
+    let swapMode = false;
+    let friendHighlightMode = false;
+    let selectedSeats = [];
+    let draggedSeat = null;
+
+    // Toast notification
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        const icons = { success: '[OK]', error: '[!!]', warning: '[**]', info: '[i]' };
+        toast.innerHTML = `<span class="toast-icon">${icons[type] || '[i]'}</span><span>${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100%)';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    function isTeacherMode() {
+        return new URLSearchParams(window.location.search).get("teacher") === "1";
+    }
+
+    function getHighlightedStudent() {
+        return new URLSearchParams(window.location.search).get("highlight");
+    }
+
+    // Friend highlighting
+    function toggleFriendHighlight() {
+        friendHighlightMode = !friendHighlightMode;
+        const button = document.getElementById('friendToggle');
+        const countBadge = document.getElementById('friendCount');
+
+        if (friendHighlightMode) {
+            button.textContent = '[&] Hide Friends';
+            button.classList.add('btn-success');
+            countBadge.style.display = 'inline-block';
+            highlightFriends();
+        } else {
+            button.textContent = '[&] Show Friends';
+            button.classList.remove('btn-success');
+            countBadge.style.display = 'none';
+            clearFriendHighlights();
+        }
+    }
+
+    function highlightFriends() {
+        let adjacentCount = 0;
+        const seats = document.querySelectorAll('.seat');
+        const seatPositions = new Map();
+
+        // Build position map
+        seats.forEach(seat => {
+            const pos = seat.dataset.position;
+            seatPositions.set(pos, seat);
+        });
+
+        seats.forEach(seat => {
+            const studentId = seat.dataset.id;
+            if (friendMap.has(studentId)) {
+                seat.classList.add('friend-highlight');
+
+                // Check if any friend is adjacent
+                const [x, y] = seat.dataset.position.split(',').map(Number);
+                const adjacentPositions = [
+                    [x-1, y-1], [x, y-1], [x+1, y-1],
+                    [x-1, y], [x+1, y],
+                    [x-1, y+1], [x, y+1], [x+1, y+1]
+                ];
+
+                for (const [ax, ay] of adjacentPositions) {
+                    const adjacentSeat = seatPositions.get(`${ax},${ay}`);
+                    if (adjacentSeat) {
+                        const adjacentId = adjacentSeat.dataset.id;
+                        if (friendMap.get(studentId)?.has(adjacentId)) {
+                            seat.classList.add('friend-adjacent');
+                            adjacentSeat.classList.add('friend-adjacent');
+                            adjacentCount++;
+                        }
+                    }
+                }
+            }
+        });
+
+        document.getElementById('friendCount').textContent = `${adjacentCount} Adjacent Friends`;
+        if (adjacentCount > 0) {
+            showToast(`Warning: ${adjacentCount} friend pairs are seated adjacent!`, 'warning');
+        }
+    }
+
+    function clearFriendHighlights() {
+        document.querySelectorAll('.seat').forEach(seat => {
+            seat.classList.remove('friend-highlight', 'friend-adjacent');
+        });
+    }
+
+    // Swap mode
+    function toggleSwapMode() {
+        swapMode = !swapMode;
+        const button = document.getElementById('modeToggle');
+        const status = document.getElementById('swapStatus');
+
+        if (swapMode) {
+            button.textContent = '[X] Exit Swap';
+            button.classList.add('btn-danger');
+            status.classList.add('active');
+            showToast('Swap mode enabled - drag or click seats to swap', 'info');
+        } else {
+            button.textContent = '[~] Swap Mode';
+            button.classList.remove('btn-danger');
+            status.classList.remove('active');
+            clearSelection();
+        }
+    }
+
+    function clearSelection() {
+        selectedSeats = [];
+        document.querySelectorAll('.seat.selected').forEach(seat => {
+            seat.classList.remove('selected');
+        });
+        updateSwapStatus();
+    }
+
+    function updateSwapStatus() {
+        const status = document.getElementById('swapStatus');
+        if (selectedSeats.length === 0) {
+            status.textContent = 'Drag a seat onto another to swap, or click two seats';
+            status.classList.remove('selecting');
+        } else if (selectedSeats.length === 1) {
+            const seatInfo = selectedSeats[0].dataset.id;
+            status.textContent = `Selected: ${seatInfo} - Click another seat to swap`;
+            status.classList.add('selecting');
+        }
+    }
+
+    // Drag and drop handlers
+    function handleDragStart(e) {
+        if (!swapMode) {
+            e.preventDefault();
+            return;
+        }
+        draggedSeat = e.target.closest('.seat');
+        draggedSeat.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', draggedSeat.dataset.id);
+    }
+
+    function handleDragEnd(e) {
+        if (draggedSeat) {
+            draggedSeat.classList.remove('dragging');
+            draggedSeat = null;
+        }
+        document.querySelectorAll('.seat.drag-over').forEach(seat => {
+            seat.classList.remove('drag-over');
+        });
+    }
+
+    function handleDragOver(e) {
+        if (!swapMode || !draggedSeat) return;
+        e.preventDefault();
+        const targetSeat = e.target.closest('.seat');
+        if (targetSeat && targetSeat !== draggedSeat) {
+            targetSeat.classList.add('drag-over');
+        }
+    }
+
+    function handleDragLeave(e) {
+        const targetSeat = e.target.closest('.seat');
+        if (targetSeat) {
+            targetSeat.classList.remove('drag-over');
+        }
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        const targetSeat = e.target.closest('.seat');
+        if (targetSeat && draggedSeat && targetSeat !== draggedSeat) {
+            performSwap(draggedSeat, targetSeat);
+        }
+        handleDragEnd(e);
+    }
+
+    function handleSeatClick(seatElement) {
+        if (!swapMode) return;
+
+        if (seatElement.classList.contains('selected')) {
+            seatElement.classList.remove('selected');
+            selectedSeats = selectedSeats.filter(seat => seat !== seatElement);
+        } else {
+            if (selectedSeats.length < 2) {
+                seatElement.classList.add('selected');
+                selectedSeats.push(seatElement);
+            }
+        }
+
+        if (selectedSeats.length === 2) {
+            performSwap(selectedSeats[0], selectedSeats[1]);
+            clearSelection();
+        }
+
+        updateSwapStatus();
+    }
+
+    function performSwap(seat1, seat2) {
+        const student1 = { id: seat1.dataset.id, name: seat1.dataset.name, seatNo: seat1.dataset.seatNo };
+        const student2 = { id: seat2.dataset.id, name: seat2.dataset.name, seatNo: seat2.dataset.seatNo };
+
+        swapSeatContent(seat1, seat2);
+
+        // Visual feedback
+        seat1.classList.add('swap-success');
+        seat2.classList.add('swap-success');
+        setTimeout(() => {
+            seat1.classList.remove('swap-success');
+            seat2.classList.remove('swap-success');
+        }, 500);
+
+        showToast(`Swapped ${student1.id} <-> ${student2.id}`, 'success');
+
+        // Re-check friend highlights if enabled
+        if (friendHighlightMode) {
+            clearFriendHighlights();
+            highlightFriends();
+        }
+    }
+
+    function swapSeatContent(seat1, seat2) {
+        const seat1Data = {
+            id: seat1.dataset.id,
+            name: seat1.dataset.name,
+            year: seat1.dataset.year,
+            branch: seat1.dataset.branch,
+            subject: seat1.dataset.subject,
+            dept: seat1.dataset.dept,
+            time: seat1.dataset.time,
+            innerHTML: seat1.innerHTML,
+            borderLeft: seat1.style.borderLeft
+        };
+
+        const seat2Data = {
+            id: seat2.dataset.id,
+            name: seat2.dataset.name,
+            year: seat2.dataset.year,
+            branch: seat2.dataset.branch,
+            subject: seat2.dataset.subject,
+            dept: seat2.dataset.dept,
+            time: seat2.dataset.time,
+            innerHTML: seat2.innerHTML,
+            borderLeft: seat2.style.borderLeft
+        };
+
+        // Swap data attributes
+        seat1.dataset.id = seat2Data.id;
+        seat1.dataset.name = seat2Data.name;
+        seat1.dataset.year = seat2Data.year;
+        seat1.dataset.branch = seat2Data.branch;
+        seat1.dataset.subject = seat2Data.subject;
+        seat1.dataset.dept = seat2Data.dept;
+        seat1.dataset.time = seat2Data.time;
+
+        seat2.dataset.id = seat1Data.id;
+        seat2.dataset.name = seat1Data.name;
+        seat2.dataset.year = seat1Data.year;
+        seat2.dataset.branch = seat1Data.branch;
+        seat2.dataset.subject = seat1Data.subject;
+        seat2.dataset.dept = seat1Data.dept;
+        seat2.dataset.time = seat1Data.time;
+
+        // Save seat numbers before swap
+        const seat1SeatNo = seat1.querySelector('.seat-number').textContent;
+        const seat2SeatNo = seat2.querySelector('.seat-number').textContent;
+
+        // Swap content
+        seat1.innerHTML = seat2Data.innerHTML;
+        seat2.innerHTML = seat1Data.innerHTML;
+
+        // Restore seat numbers (they stay with position)
+        seat1.querySelector('.seat-number').textContent = seat1SeatNo;
+        seat2.querySelector('.seat-number').textContent = seat2SeatNo;
+
+        // Swap border colors
+        seat1.style.borderLeft = seat2Data.borderLeft;
+        seat2.style.borderLeft = seat1Data.borderLeft;
+
+        // Update friend class
+        seat1.classList.toggle('has-friend', friendMap.has(seat2Data.id));
+        seat2.classList.toggle('has-friend', friendMap.has(seat1Data.id));
+    }
+
+    function filterSeats() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const time = document.getElementById('timeFilter').value;
+        const year = document.getElementById('yearFilter').value;
+        const branch = document.getElementById('branchFilter').value;
+
+        document.querySelectorAll('.seat').forEach(seat => {
+            if (!seat.dataset.id) return;
+
+            const id = seat.dataset.id.toLowerCase();
+            const name = seat.dataset.name.toLowerCase();
+            const seatTime = seat.dataset.time;
+            const seatYear = seat.dataset.year;
+            const seatBranch = seat.dataset.branch;
+
+            const matchesSearch = id.includes(searchTerm) || name.includes(searchTerm);
+            const matchesTime = !time || seatTime === time;
+            const matchesYear = year === "all" || seatYear === year;
+            const matchesBranch = branch === "all" || seatBranch === branch;
+
+            if (matchesSearch && matchesTime && matchesYear && matchesBranch) {
+                seat.style.opacity = '1';
+                seat.style.filter = 'none';
+                seat.style.pointerEvents = 'auto';
+            } else {
+                seat.style.opacity = '0.3';
+                seat.style.filter = 'grayscale(100%)';
+                seat.style.pointerEvents = 'none';
+            }
+        });
+    }
+
+    function filterByDept(dept) {
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput.value === dept) {
+            searchInput.value = '';
+        } else {
+            searchInput.value = dept;
+        }
+        filterSeats();
+    }
+
+    // Event listeners
+    document.getElementById('searchInput').addEventListener('input', filterSeats);
+    document.getElementById('timeFilter').addEventListener('change', filterSeats);
+    document.getElementById('yearFilter').addEventListener('change', filterSeats);
+    document.getElementById('branchFilter').addEventListener('change', filterSeats);
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && swapMode) {
+            toggleSwapMode();
+        }
+        if (e.key === 'f' && e.ctrlKey) {
+            e.preventDefault();
+            document.getElementById('searchInput').focus();
+        }
+    });
+
+    window.addEventListener('load', function() {
+        if (isTeacherMode()) {
+            document.getElementById('modeToggle').style.display = 'inline-flex';
+        } else {
+            document.getElementById('modeToggle').style.display = 'none';
+        }
+
+        const highlightId = getHighlightedStudent();
+        if (highlightId) {
+            const targetSeat = document.querySelector(`[data-id="${highlightId}"]`);
+            if (targetSeat) {
+                targetSeat.style.border = '3px solid var(--accent-yellow)';
+                targetSeat.style.boxShadow = '0 0 0 4px rgba(184, 164, 74, 0.3), 3px 3px 0 var(--border-dark)';
+                targetSeat.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                showToast(`Found: ${highlightId}`, 'success');
+            }
+        }
+
+        // Show friend count if any
+        if (friendPairs.length > 0) {
+            showToast(`${friendPairs.length} friend pairs loaded`, 'info');
+        }
+    });
+    </script>
+</body>
+</html>

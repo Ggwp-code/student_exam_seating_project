@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Schedule - Admin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <span class="text-xl font-semibold">Admin Panel - Exam Schedule</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{{ url_for('admin_dashboard') }}" class="text-gray-600 hover:text-gray-900">Back to Dashboard</a>
+                    <a href="{{ url_for('logout') }}" class="text-red-600 hover:text-red-700">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">Exam Schedule Overview</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-bold mb-4">Students by Exam Time</h2>
+                <ul class="list-disc list-inside text-gray-700">
+                    <li>Morning Exams: <span class="font-semibold">{{ exam_time_distribution.Morning }} students</span></li>
+                    <li>Afternoon Exams: <span class="font-semibold">{{ exam_time_distribution.Afternoon }} students</span></li>
+                    <li>Evening Exams: <span class="font-semibold">{{ exam_time_distribution.Evening }} students</span></li>
+                </ul>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-bold mb-4">Subjects by Exam Date</h2>
+                {% if exam_date_subjects %}
+                    {% for date, subjects in exam_date_subjects.items()|sort %}
+                        <h3 class="font-semibold mt-4 mb-2">{{ date }}</h3>
+                        <ul class="list-disc list-inside ml-4 text-gray-700">
+                            {% for subject in subjects %}
+                                <li>{{ subject }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-gray-600">No exam date/subject information available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+</body>
+</html>

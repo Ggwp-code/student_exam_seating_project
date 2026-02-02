@@ -1,0 +1,129 @@
+{% extends "base_retro.html" %}
+
+{% block title %}{{ exam.name }} - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[E] {{ exam.name }}</h1>
+</div>
+
+<!-- Exam Info Card -->
+<div class="card">
+    <div class="card-header flex-between">
+        <h3>[?] <code>{{ exam.exam_code }}</code> | {{ exam.subject }}</h3>
+        <div>
+            <a href="{{ url_for('edit_exam', exam_id=exam.id) }}" class="btn btn-sm">[~] Edit</a>
+            <a href="{{ url_for('exam_seating_history', exam_id=exam.id) }}" class="btn btn-sm">[H] History</a>
+            <a href="{{ url_for('export_seating_excel', exam_id=exam.id) }}" class="btn btn-sm btn-success">[v] Export</a>
+            <a href="{{ url_for('exam_results', exam_id=exam.id) }}" class="btn btn-sm btn-warning">[!] Results</a>
+        </div>
+    </div>
+    <div class="card-body">
+        <p class="text-mono">
+            Date: {{ exam.exam_date.strftime('%Y-%m-%d') }} |
+            Time: {{ exam.exam_time.value }} |
+            Duration: {{ exam.duration_minutes }} min
+        </p>
+    </div>
+</div>
+
+<!-- Stats Grid -->
+<div class="grid-4 mt-2">
+    <div class="card text-center">
+        <div class="card-body">
+            <div class="stat-value text-primary">{{ stats.enrolled }}</div>
+            <div class="stat-label">Enrolled</div>
+        </div>
+    </div>
+    <div class="card text-center">
+        <div class="card-body">
+            <div class="stat-value text-success">{{ stats.seated }}</div>
+            <div class="stat-label">Seated</div>
+        </div>
+    </div>
+    <div class="card text-center">
+        <div class="card-body">
+            <div class="stat-value text-info">{{ stats.rooms_used }}</div>
+            <div class="stat-label">Rooms</div>
+        </div>
+    </div>
+    <div class="card text-center">
+        <div class="card-body">
+            <div class="stat-value text-warning">{{ stats.friend_adjacencies }}</div>
+            <div class="stat-label">Flags</div>
+        </div>
+    </div>
+</div>
+
+<div class="grid-2 mt-2">
+    <!-- Enrolled Students -->
+    <div class="card">
+        <div class="card-header flex-between">
+            <h3>[S] Enrolled Students</h3>
+            <button class="btn btn-sm btn-primary" onclick="alert('Use Import/Export to bulk enroll students')">[+] Add</button>
+        </div>
+        <div class="card-body" style="max-height: 350px; overflow-y: auto;">
+            {% if enrollments %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Enrolled</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for enrollment, student in enrollments %}
+                            <tr>
+                                <td><code>{{ student.student_id }}</code></td>
+                                <td>{{ student.name }}</td>
+                                <td>{{ enrollment.enrolled_at.strftime('%Y-%m-%d') if enrollment.enrolled_at else 'N/A' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="text-muted text-center">[...] No students enrolled yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Seating Assignments -->
+    <div class="card">
+        <div class="card-header flex-between">
+            <h3>[#] Seating Assignments</h3>
+            <form action="{{ url_for('save_seating_snapshot', exam_id=exam.id) }}" method="post" class="d-inline">
+                <button type="submit" class="btn btn-sm" {% if not assignments %}disabled{% endif %}>
+                    [S] Save Snapshot
+                </button>
+            </form>
+        </div>
+        <div class="card-body" style="max-height: 350px; overflow-y: auto;">
+            {% if assignments %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Room</th>
+                            <th>Seat</th>
+                            <th>Pos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assignment, student in assignments %}
+                            <tr>
+                                <td>{{ student.name }}</td>
+                                <td>{{ assignment.room_id }}</td>
+                                <td>{{ assignment.seat_number }}</td>
+                                <td><code>({{ assignment.seat_x }},{{ assignment.seat_y }})</code></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="text-muted text-center">[...] No seating assignments yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

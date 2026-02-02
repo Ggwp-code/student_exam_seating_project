@@ -1,0 +1,153 @@
+{% extends "base_retro.html" %}
+
+{% block title %}Notifications - Admin{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[N] Notification Management</h1>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn">[<] Back to Dashboard</a>
+</div>
+
+<div class="grid-2 mb-2">
+    <!-- Email Settings -->
+    <div class="card">
+        <div class="card-header flex-between">
+            <h3>[E] Email Settings</h3>
+            <span class="badge {% if email_enabled %}badge-green{% else %}badge-yellow{% endif %}">
+                {% if email_enabled %}Enabled{% else %}Disabled{% endif %}
+            </span>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('update_notification_settings') }}">
+                <div class="form-group mb-2">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" name="email_enabled" {% if email_enabled %}checked{% endif %}>
+                        <span>Enable Email Notifications</span>
+                    </label>
+                </div>
+                <div class="form-group mb-1">
+                    <label class="form-label">SMTP Server</label>
+                    <input type="text" name="smtp_server" value="{{ smtp_server }}" class="form-control" placeholder="smtp.gmail.com">
+                </div>
+                <div class="grid-2 mb-1">
+                    <div class="form-group">
+                        <label class="form-label">Port</label>
+                        <input type="text" name="smtp_port" value="587" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sender Email</label>
+                        <input type="email" name="sender_email" class="form-control" placeholder="noreply@school.edu">
+                    </div>
+                </div>
+                <div class="grid-2 mb-2">
+                    <div class="form-group">
+                        <label class="form-label">SMTP Username</label>
+                        <input type="text" name="smtp_username" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">SMTP Password</label>
+                        <input type="password" name="smtp_password" class="form-control" placeholder="Leave blank to keep current">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">[OK] Save Settings</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card">
+        <div class="card-header">
+            <h3>[*] Quick Actions</h3>
+        </div>
+        <div class="card-body">
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <form method="POST" action="{{ url_for('send_pending_notifications') }}">
+                    <button type="submit" class="btn btn-success" style="width: 100%;">
+                        [>] Send All Pending Notifications
+                    </button>
+                </form>
+                <form method="POST" action="{{ url_for('schedule_exam_reminders') }}">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        [!] Schedule Tomorrow's Reminders
+                    </button>
+                </form>
+            </div>
+            <div class="alert alert-info mt-2">
+                <span>[i]</span>
+                <div class="text-sm">
+                    <p><strong>Send Pending:</strong> Processes all queued notifications and sends via email.</p>
+                    <p><strong>Schedule Reminders:</strong> Creates reminder notifications for teachers with sessions tomorrow.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notification Queue -->
+<div class="card">
+    <div class="card-header flex-between">
+        <h3>[#] Notification Queue</h3>
+        <span class="badge badge-blue">{{ notifications|length }} recent</span>
+    </div>
+    <div class="card-body">
+        {% if notifications %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Recipient</th>
+                    <th>Type</th>
+                    <th>Subject</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Sent</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for notif in notifications %}
+                <tr>
+                    <td>#{{ notif.id }}</td>
+                    <td><strong>{{ notif.recipient }}</strong></td>
+                    <td><span class="badge">{{ notif.type }}</span></td>
+                    <td class="text-sm">{{ notif.subject }}</td>
+                    <td>
+                        <span class="badge {% if notif.status == 'sent' %}badge-green{% elif notif.status == 'pending' %}badge-yellow{% else %}badge-red{% endif %}">
+                            {{ notif.status }}
+                        </span>
+                    </td>
+                    <td class="text-sm">{{ notif.created }}</td>
+                    <td class="text-sm">{{ notif.sent or '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">[?]</div>
+            <p>No notifications in queue.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Notification Types Info -->
+<div class="card mt-2">
+    <div class="card-header">
+        <h3>[?] Notification Types</h3>
+    </div>
+    <div class="card-body">
+        <div class="grid-2">
+            <div>
+                <p><strong>swap_request</strong> - New swap request received</p>
+                <p><strong>swap_accepted</strong> - Swap accepted by teacher</p>
+                <p><strong>swap_approved</strong> - Swap approved by admin</p>
+            </div>
+            <div>
+                <p><strong>swap_rejected</strong> - Swap request rejected</p>
+                <p><strong>schedule_changed</strong> - Schedule modification</p>
+                <p><strong>exam_reminder</strong> - 24-hour exam reminder</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

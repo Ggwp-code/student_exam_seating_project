@@ -1,0 +1,9 @@
+SeatNo,StudentID,Name,Department,Branch,Year,Subject,Room,Position_X,Position_Y,ExamDate,ExamTime
+1,1RV23CS070,CHAITHANYA B,CS,Unknown,2,Database Systems,Room-A,0,0,2025-06-22,Evening
+2,1RV23CS083,DARSHAN CHAVAN,CS,Unknown,2,Database Systems,Room-A,1,0,2025-06-22,Evening
+3,1RV23CS090,GAGAN B C,CS,Unknown,2,Database Systems,Room-A,2,0,2025-06-22,Evening
+4,1RV23CS098,HARSHITH KUMAR S B,CS,Unknown,2,Database Systems,Room-A,3,0,2025-06-22,Evening
+5,1RV23CS105,JESTAKUMAR,CS,Unknown,2,Database Systems,Room-A,4,0,2025-06-22,Evening
+6,1RV23CS114,KRISHANG REDDY,CS,Unknown,2,Database Systems,Room-A,5,0,2025-06-22,Evening
+7,1RV23CS305,SPOORTHY S,CS,Unknown,2,Database Systems,Room-A,6,0,2025-06-22,Evening
+8,1RV24CS426,CHETHAN GOWDA,CS,Unknown,2,Database Systems,Room-A,7,0,2025-06-22,Evening

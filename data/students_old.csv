@@ -1,0 +1,54 @@
+StudentID,Department,Subject,ExamTime
+1001,Physics,Quantum Mechanics,Evening
+1002,Physics,Quantum Mechanics,Afternoon
+1003,Chemistry,Organic Chemistry,Morning
+1004,Computer Science,Operating Systems,Evening
+1005,Computer Science,Algorithms,Evening
+1006,Electrical Engineering,Circuit Theory,Afternoon
+1007,Mathematics,Linear Algebra,Afternoon
+1008,Electrical Engineering,Circuit Theory,Evening
+1009,Physics,Quantum Mechanics,Afternoon
+1010,Computer Science,Algorithms,Afternoon
+1011,Biology,Microbiology,Morning
+1012,Electrical Engineering,Control Systems,Afternoon
+1013,Computer Science,Database Systems,Afternoon
+1014,Physics,Thermodynamics,Evening
+1015,Electrical Engineering,Control Systems,Morning
+1016,Chemistry,Physical Chemistry,Morning
+1017,Mathematics,Statistics,Afternoon
+1018,Physics,Quantum Mechanics,Morning
+1019,Electrical Engineering,Power Systems,Evening
+1020,Computer Science,Algorithms,Evening
+1021,Chemistry,Physical Chemistry,Evening
+1022,Electrical Engineering,Power Systems,Morning
+1023,Mathematics,Calculus,Morning
+1024,Electrical Engineering,Circuit Theory,Afternoon
+1025,Biology,Genetics,Morning
+1026,Computer Science,Operating Systems,Afternoon
+1027,Mathematics,Linear Algebra,Morning
+1028,Electrical Engineering,Control Systems,Evening
+1029,Chemistry,Organic Chemistry,Afternoon
+1030,Physics,Thermodynamics,Morning
+1031,Biology,Genetics,Afternoon
+1032,Computer Science,Database Systems,Evening
+1033,Electrical Engineering,Power Systems,Afternoon
+1034,Chemistry,Physical Chemistry,Afternoon
+1035,Mathematics,Statistics,Evening
+1036,Physics,Quantum Mechanics,Morning
+1037,Chemistry,Organic Chemistry,Evening
+1038,Electrical Engineering,Circuit Theory,Morning
+1039,Computer Science,Algorithms,Morning
+1040,Biology,Microbiology,Afternoon
+1041,Mathematics,Calculus,Evening
+1042,Computer Science,Database Systems,Morning
+1043,Electrical Engineering,Control Systems,Afternoon
+1044,Chemistry,Physical Chemistry,Morning
+1045,Biology,Genetics,Evening
+1046,Physics,Thermodynamics,Afternoon
+1047,Electrical Engineering,Power Systems,Evening
+1048,Computer Science,Operating Systems,Morning
+1049,Mathematics,Linear Algebra,Evening
+1050,Biology,Microbiology,Evening
+
+
+

@@ -1,0 +1,103 @@
+{% extends "base_retro.html" %}
+
+{% block title %}Version {{ history.version }} - {{ exam.name }} - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header flex-between">
+    <h1>
+        [V] Version {{ history.version }}
+        {% if history.is_active %}
+            <span class="badge badge-green">ACTIVE</span>
+        {% endif %}
+    </h1>
+    {% if not history.is_active %}
+        <form action="{{ url_for('restore_seating_version', exam_id=exam.id, version=history.version) }}"
+              method="post" onsubmit="return confirm('Restore this version?')">
+            <button type="submit" class="btn btn-success">[<] Restore This Version</button>
+        </form>
+    {% endif %}
+</div>
+
+<!-- Version Info -->
+<div class="card mb-2">
+    <div class="card-header">
+        <h3>[?] Version Details</h3>
+    </div>
+    <div class="card-body">
+        <div class="grid-5">
+            <div>
+                <strong>Generated</strong><br>
+                <span class="text-mono">{{ history.generated_at.strftime('%Y-%m-%d %H:%M') if history.generated_at else 'Unknown' }}</span>
+            </div>
+            <div>
+                <strong>Algorithm</strong><br>
+                <code>{{ history.algorithm_used or 'N/A' }}</code>
+            </div>
+            <div>
+                <strong>Students</strong><br>
+                <span class="text-mono">{{ history.total_students or 0 }}</span>
+            </div>
+            <div>
+                <strong>Rooms</strong><br>
+                <span class="text-mono">{{ history.rooms_used or 0 }}</span>
+            </div>
+            <div>
+                <strong>Gen Time</strong><br>
+                <span class="text-mono">{{ history.generation_time_ms or 0 }}ms</span>
+            </div>
+        </div>
+        {% if history.notes %}
+            <hr class="divider">
+            <p class="mb-0"><strong>Notes:</strong> {{ history.notes }}</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Snapshot Data -->
+<div class="card">
+    <div class="card-header">
+        <h3>[#] Seating Assignments</h3>
+    </div>
+    <div class="card-body">
+        {% if snapshot and snapshot.assignments %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Student ID</th>
+                            <th>Room ID</th>
+                            <th>Seat #</th>
+                            <th>Position</th>
+                            <th>Group</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in snapshot.assignments %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td><code>{{ a.student_id }}</code></td>
+                                <td>{{ a.room_id }}</td>
+                                <td>{{ a.seat_number }}</td>
+                                <td><code>({{ a.seat_x }}, {{ a.seat_y }})</code></td>
+                                <td>
+                                    {% if a.color_group %}
+                                        <span class="badge badge-gray">{{ a.color_group }}</span>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-muted text-sm mt-2">
+                Showing {{ snapshot.assignments|length }} assignments across {{ snapshot.rooms|length if snapshot.rooms else '?' }} rooms.
+            </p>
+        {% else %}
+            <p class="text-muted text-center">[...] No assignment data in this snapshot.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

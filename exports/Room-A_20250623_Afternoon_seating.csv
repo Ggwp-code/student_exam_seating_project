@@ -1,0 +1,8 @@
+SeatNo,StudentID,Name,Department,Branch,Year,Subject,Room,Position_X,Position_Y,ExamDate,ExamTime
+1,1RV23CS072,CHANDAN G,CS,Unknown,2,Operating Systems,Room-A,0,0,2025-06-23,Afternoon
+2,1RV23CS084,DILSHAD AHMED,CS,Unknown,2,Operating Systems,Room-A,1,0,2025-06-23,Afternoon
+3,1RV23CS094,GUJAR ADVAY KIRAN,CS,Unknown,2,Operating Systems,Room-A,2,0,2025-06-23,Afternoon
+4,1RV23CS102,ISHAAN C,CS,Unknown,2,Operating Systems,Room-A,3,0,2025-06-23,Afternoon
+5,1RV23CS109,KALIANPUR ROHITH,CS,Unknown,2,Operating Systems,Room-A,4,0,2025-06-23,Afternoon
+6,1RV23CS118,LAKSHMI S D,CS,Unknown,2,Operating Systems,Room-A,5,0,2025-06-23,Afternoon
+7,1RV24CS408,JEETENDRA K,CS,Unknown,2,Operating Systems,Room-A,6,0,2025-06-23,Afternoon

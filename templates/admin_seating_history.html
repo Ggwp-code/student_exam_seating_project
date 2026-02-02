@@ -1,0 +1,77 @@
+{% extends "base_retro.html" %}
+
+{% block title %}Seating History - {{ exam.name }} - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header flex-between">
+    <h1>[H] Seating History</h1>
+    <form action="{{ url_for('save_seating_snapshot', exam_id=exam.id) }}" method="post">
+        <input type="hidden" name="notes" value="Manual snapshot">
+        <button type="submit" class="btn btn-primary">[+] Save Current Version</button>
+    </form>
+</div>
+
+<div class="card mb-2">
+    <div class="card-header">
+        <h3>[E] {{ exam.name }}</h3>
+    </div>
+    <div class="card-body">
+        <p class="text-mono">{{ exam.exam_date.strftime('%Y-%m-%d') }} | {{ exam.exam_time.value }}</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>[*] Version Timeline</h3>
+    </div>
+    <div class="card-body">
+        {% if history %}
+            {% for h in history %}
+                <div class="card mb-1 {% if h.is_active %}border-success{% endif %}" style="{% if h.is_active %}border-left: 4px solid var(--accent-green);{% endif %}">
+                    <div class="card-body">
+                        <div class="flex-between">
+                            <div>
+                                <h4>
+                                    Version {{ h.version }}
+                                    {% if h.is_active %}
+                                        <span class="badge badge-green">ACTIVE</span>
+                                    {% endif %}
+                                </h4>
+                                <p class="text-muted text-sm mb-1">
+                                    Generated: {{ h.generated_at.strftime('%Y-%m-%d %H:%M') if h.generated_at else 'Unknown' }}
+                                    | Algorithm: <code>{{ h.algorithm_used or 'N/A' }}</code>
+                                    | Time: {{ h.generation_time_ms or 0 }}ms
+                                </p>
+                                <p class="mb-0">
+                                    <span class="badge badge-blue">{{ h.total_students or 0 }} students</span>
+                                    <span class="badge badge-gray">{{ h.rooms_used or 0 }} rooms</span>
+                                </p>
+                                {% if h.notes %}
+                                    <p class="text-muted text-sm mt-1"><em>{{ h.notes }}</em></p>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <a href="{{ url_for('view_seating_version', exam_id=exam.id, version=h.version) }}"
+                                   class="btn btn-sm">[O] View</a>
+                                {% if not h.is_active %}
+                                    <form action="{{ url_for('restore_seating_version', exam_id=exam.id, version=h.version) }}"
+                                          method="post" style="display: inline;"
+                                          onsubmit="return confirm('Restore this version?')">
+                                        <button type="submit" class="btn btn-sm btn-success">[<] Restore</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center py-4">
+                <div class="text-mono" style="font-size: 48px; color: var(--text-muted);">[?]</div>
+                <p class="text-muted">No seating history found.</p>
+                <p class="text-muted text-sm">Generate a seating plan and save a snapshot to create history.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

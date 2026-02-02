@@ -1,0 +1,120 @@
+{% extends "base_retro.html" %}
+
+{% block title %}Teacher Dashboard - ExamSeat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[T] Teacher Dashboard</h1>
+    <span class="badge badge-green">{{ username }}</span>
+</div>
+
+<!-- Welcome Card -->
+<div class="card mb-2">
+    <div class="card-header">
+        <h3>[>] Welcome, {{ username }}</h3>
+    </div>
+    <div class="card-body">
+        <p>You are logged in as a <span class="badge badge-green">Teacher</span>. You have <strong>{{ total_sessions }}</strong> invigilation sessions assigned.</p>
+    </div>
+</div>
+
+<!-- Upcoming Sessions -->
+<div class="card mb-2">
+    <div class="card-header flex-between">
+        <h3>[!] Upcoming Sessions</h3>
+        <a href="{{ url_for('teacher_schedule') }}" class="btn btn-sm btn-primary">[>] View Full Schedule</a>
+    </div>
+    <div class="card-body">
+        {% if upcoming %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Room</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in upcoming %}
+                    <tr>
+                        <td><strong>{{ item.date }}</strong></td>
+                        <td>
+                            <span class="badge {% if item.time == 'Morning' %}badge-yellow{% elif item.time == 'Afternoon' %}badge-blue{% else %}badge-green{% endif %}">
+                                {{ item.time }}
+                            </span>
+                        </td>
+                        <td>{{ item.room }}</td>
+                        <td>
+                            {% set safe_date = item.date | replace('-', '') %}
+                            <a href="{{ url_for('static_html', filename=item.room ~ '_' ~ safe_date ~ '_' ~ item.time ~ '.html') }}"
+                               target="_blank" class="btn btn-sm btn-primary">
+                                [>] Layout
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">[?]</div>
+                <p>No sessions assigned yet.</p>
+                <p class="text-sm text-muted">Check back later for your invigilation schedule.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card">
+    <div class="card-header">
+        <h3>[*] Quick Actions</h3>
+    </div>
+    <div class="card-body">
+        <div class="grid-3" style="margin-bottom: 1rem;">
+            <a href="{{ url_for('teacher_schedule') }}" class="btn" style="display: block; text-align: center;">
+                [S] Full Schedule
+            </a>
+            <a href="{{ url_for('download_teacher_schedule') }}" class="btn btn-primary" style="display: block; text-align: center;">
+                [D] Download CSV
+            </a>
+            <a href="{{ url_for('teacher_swap_requests') }}" class="btn" style="display: block; text-align: center;">
+                [R] Swap Requests
+            </a>
+        </div>
+        <div class="grid-3">
+            <a href="{{ url_for('teacher_preferences') }}" class="btn" style="display: block; text-align: center;">
+                [P] My Preferences
+            </a>
+            <a href="{{ url_for('teacher_notifications') }}" class="btn" style="display: block; text-align: center;">
+                [N] Notifications
+            </a>
+            <a href="{{ url_for('seating_dashboard') }}" target="_blank" class="btn" style="display: block; text-align: center;">
+                [=] All Layouts
+            </a>
+        </div>
+        <div style="margin-top: 1rem; text-align: center;">
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">
+                [X] Logout
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Schedule Info Card -->
+{% if upcoming %}
+<div class="card mt-2">
+    <div class="card-header">
+        <h3>[i] Schedule Notes</h3>
+    </div>
+    <div class="card-body">
+        <ul style="margin: 0; padding-left: 1.5rem;">
+            <li>You will never have consecutive invigilation sessions on the same day</li>
+            <li>Report to your assigned room 30 minutes before exam time</li>
+            <li>Download your schedule for offline reference</li>
+        </ul>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

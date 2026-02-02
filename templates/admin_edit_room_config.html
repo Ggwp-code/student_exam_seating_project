@@ -1,0 +1,233 @@
+{% extends "base_retro.html" %}
+
+{% block title %}Edit Room - {{ room.room_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>[~] Edit Room: {{ room.room_name }}</h1>
+    <a href="{{ url_for('admin_rooms_config') }}" class="btn">[<] Back to Rooms</a>
+</div>
+
+<!-- Current Room Info -->
+<div class="card mb-2">
+    <div class="card-header">
+        <h3>[i] Current Room Information</h3>
+    </div>
+    <div class="card-body">
+        <div class="grid-3">
+            <div>
+                <p class="text-muted text-sm">Room Name</p>
+                <p><strong>{{ room.room_name }}</strong></p>
+            </div>
+            <div>
+                <p class="text-muted text-sm">Current Capacity</p>
+                <p><span class="badge badge-green">{{ room.capacity }} seats</span></p>
+            </div>
+            <div>
+                <p class="text-muted text-sm">Layout</p>
+                <p><code>{{ room.layout_columns }}x{{ room.layout_rows }}</code></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form method="POST" action="{{ url_for('admin_edit_room_config', room_id=room.id) }}">
+    <div class="grid-2">
+        <!-- Basic Configuration -->
+        <div class="card">
+            <div class="card-header">
+                <h3>[#] Basic Configuration</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">Room Capacity *</label>
+                    <input type="number" name="capacity" value="{{ room.capacity }}" class="form-control" required min="1" max="200" id="capacity">
+                    <p class="text-sm text-muted mt-1">Maximum number of students</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Room Status</label>
+                    <div class="alert alert-success">
+                        <span>[OK]</span> Room is Active - Available for scheduling
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exam Constraints -->
+        <div class="card">
+            <div class="card-header">
+                <h3>[B] Exam Constraints</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">Max Subjects</label>
+                    <input type="number" name="max_subjects" value="{{ room.max_subjects }}" class="form-control" min="1" max="50">
+                    <p class="text-sm text-muted mt-1">Leave empty for no limit</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Max Branches</label>
+                    <input type="number" name="max_branches" value="{{ room.max_branches }}" class="form-control" min="1" max="20">
+                    <p class="text-sm text-muted mt-1">Leave empty for no limit</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Max Departments</label>
+                    <input type="number" name="max_departments" value="{{ room.max_departments or 2 }}" class="form-control" min="1" max="10">
+                    <p class="text-sm text-muted mt-1">Max different departments in this room (recommended: 2)</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Max Years</label>
+                    <input type="number" name="max_years" value="{{ room.max_years or 2 }}" class="form-control" min="1" max="6">
+                    <p class="text-sm text-muted mt-1">Max different academic years in this room (recommended: 2)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seating Layout -->
+    <div class="card mb-2">
+        <div class="card-header">
+            <h3>[=] Seating Layout</h3>
+        </div>
+        <div class="card-body">
+            <div class="grid-2 mb-2">
+                <div class="form-group">
+                    <label class="form-label">Layout Columns</label>
+                    <input type="number" name="layout_columns" value="{{ room.layout_columns }}" class="form-control" min="3" max="20" id="layout_columns">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Layout Rows</label>
+                    <input type="number" name="layout_rows" value="{{ room.layout_rows }}" class="form-control" min="3" max="20" id="layout_rows">
+                </div>
+            </div>
+
+            <!-- Layout Preview -->
+            <div class="grid-3" style="background: var(--bg-secondary); padding: 12px; border: 2px solid var(--border-color);">
+                <div class="text-center">
+                    <div class="stat-value text-primary" id="total-positions">{{ room.layout_columns * room.layout_rows }}</div>
+                    <div class="stat-label">Total Positions</div>
+                </div>
+                <div class="text-center">
+                    <div class="stat-value text-success" id="capacity-display">{{ room.capacity }}</div>
+                    <div class="stat-label">Capacity</div>
+                </div>
+                <div class="text-center">
+                    <div class="stat-value" style="color: var(--accent-yellow);" id="utilization">{{ ((room.capacity / (room.layout_columns * room.layout_rows)) * 100)|round(1) }}%</div>
+                    <div class="stat-label">Utilization</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Academic Restrictions -->
+    <div class="grid-2 mb-2">
+        <div class="card">
+            <div class="card-header">
+                <h3>[Y] Allowed Years</h3>
+            </div>
+            <div class="card-body">
+                <div class="grid-2">
+                    {% for year in [1, 2, 3, 4] %}
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" name="allowed_years" value="{{ year }}"
+                               {% if year|string in room.allowed_years %}checked{% endif %}>
+                        <span>Year {{ year }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+                <p class="text-sm text-muted mt-2">Select which years can use this room</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>[G] Allowed Branches</h3>
+            </div>
+            <div class="card-body">
+                <div class="grid-2">
+                    {% for branch in ['CS', 'EC', 'ME', 'EE', 'CE', 'IT'] %}
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" name="allowed_branches" value="{{ branch }}"
+                               {% if branch in room.allowed_branches %}checked{% endif %}>
+                        <span>{{ branch }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+                <p class="text-sm text-muted mt-2">Select which branches can use this room</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tips -->
+    <div class="alert alert-info mb-2">
+        <span>[?]</span>
+        <div>
+            <strong>Configuration Tips:</strong>
+            <ul style="margin: 8px 0 0 16px; padding: 0;">
+                <li>Layout positions (columns x rows) should be >= capacity</li>
+                <li>Lower max subjects/branches helps reduce conflicts</li>
+                <li>Aim for 70-90% utilization for optimal seating</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="card">
+        <div class="card-body flex-between">
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="btn btn-success">[OK] Update Room</button>
+                <a href="{{ url_for('admin_rooms_config') }}" class="btn">[X] Cancel</a>
+            </div>
+            <span class="text-sm text-muted">Changes take effect immediately</span>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function updateLayoutStats() {
+        const columns = parseInt(document.getElementById('layout_columns').value) || 0;
+        const rows = parseInt(document.getElementById('layout_rows').value) || 0;
+        const capacity = parseInt(document.getElementById('capacity').value) || 0;
+
+        const totalPositions = columns * rows;
+        const utilization = totalPositions > 0 ? ((capacity / totalPositions) * 100).toFixed(1) : 0;
+
+        document.getElementById('total-positions').textContent = totalPositions;
+        document.getElementById('capacity-display').textContent = capacity;
+        document.getElementById('utilization').textContent = utilization + '%';
+    }
+
+    document.getElementById('capacity').addEventListener('input', updateLayoutStats);
+    document.getElementById('layout_columns').addEventListener('input', updateLayoutStats);
+    document.getElementById('layout_rows').addEventListener('input', updateLayoutStats);
+
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const capacity = parseInt(document.getElementById('capacity').value) || 0;
+        const columns = parseInt(document.getElementById('layout_columns').value) || 0;
+        const rows = parseInt(document.getElementById('layout_rows').value) || 0;
+
+        if (capacity > columns * rows) {
+            e.preventDefault();
+            alert('Capacity (' + capacity + ') exceeds layout positions (' + (columns * rows) + '). Please adjust.');
+            return false;
+        }
+
+        if (document.querySelectorAll('input[name="allowed_years"]:checked').length === 0) {
+            e.preventDefault();
+            alert('Please select at least one allowed year.');
+            return false;
+        }
+
+        if (document.querySelectorAll('input[name="allowed_branches"]:checked').length === 0) {
+            e.preventDefault();
+            alert('Please select at least one allowed branch.');
+            return false;
+        }
+    });
+</script>
+{% endblock %}
